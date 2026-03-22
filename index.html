@@ -1,0 +1,986 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no" />
+  <meta name="theme-color" content="#030712" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="4 Pillars" />
+  <title>4 Pillars Command Center</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" href="icon.svg" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    html, body { margin: 0; padding: 0; background: #030712; overscroll-behavior: none; }
+    body { -webkit-font-smoothing: antialiased; }
+    input[type=number]::-webkit-inner-spin-button,
+    input[type=number]::-webkit-outer-spin-button { opacity: 1; height: 28px; }
+    #loading {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      height: 100vh; color: #9ca3af; font-family: system-ui, -apple-system, sans-serif;
+      gap: 16px; background: #030712;
+    }
+    #loading .emoji { font-size: 48px; animation: pulse 1.4s ease-in-out infinite; }
+    #loading .text { font-size: 14px; letter-spacing: 0.5px; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+  </style>
+</head>
+<body>
+  <div id="root">
+    <div id="loading">
+      <div class="emoji">âï¸</div>
+      <div class="text">Loading 4 Pillarsâ¦</div>
+    </div>
+  </div>
+
+  <!-- React 18 + Babel standalone (CDN) -->
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <script type="text/babel">
+    const { useState, useEffect, useMemo } = React;
+
+    // âââ Pillar Config ââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+    const PILLARS = {
+
+      warrior: {
+        label: "Warrior", emoji: "âï¸", color: "#ef4444",
+        bg: "#1c0a0a", border: "#3f1515",
+        metrics: {
+          exercise: {
+            label: "Exercise", weight: 50,
+            type: "weighted_checklist", description: "1hr+", cap: 100, displayUnit: "pts",
+            items: {
+              morning_stretch:   { label: "Morning Stretch",   points: 15 },
+              strength_training: { label: "Strength Training", points: 70 },
+              cardio:            { label: "Cardio",            points: 70 },
+              sports:            { label: "Sports",            points: 70 },
+              ankle_stretch:     { label: "Ankle Stretch",     points: 15 },
+            },
+          },
+          sleep: {
+            label: "Sleep", weight: 30,
+            type: "tiered_number", description: "7+ hours", unit: "hrs",
+            tiers: [
+              { label: "<4h",  upTo: 4,        score: 0   },
+              { label: "4â6h", upTo: 6,        score: 50  },
+              { label: "6â7h", upTo: 7,        score: 80  },
+              { label: "7â8h", upTo: 8,        score: 90  },
+              { label: "8h+",  upTo: Infinity, score: 100 },
+            ],
+          },
+          protein: {
+            label: "Protein", weight: 20,
+            type: "weighted_checklist", description: "80g target", cap: 80, displayUnit: "g",
+            items: {
+              eggs:          { label: "Eggs",          points: 30 },
+              chicken_fish:  { label: "Chicken / Fish", points: 40 },
+              protein_shake: { label: "Protein Shake", points: 40 },
+              mutton:        { label: "Mutton",         points: 30 },
+              nuts:          { label: "Nuts",           points: 10 },
+            },
+          },
+        },
+      },
+
+      mastery: {
+        label: "Mastery", emoji: "ð§ ", color: "#a855f7",
+        bg: "#0f0a1c", border: "#2d1a52",
+        metrics: {
+          learn: {
+            label: "Learn", weight: 40,
+            type: "tiered_number", description: "60 min target", unit: "min",
+            tiers: [
+              { label: "<15m", upTo: 15,       score: 0   },
+              { label: "15m",  upTo: 30,       score: 25  },
+              { label: "30m",  upTo: 45,       score: 50  },
+              { label: "45m",  upTo: 60,       score: 75  },
+              { label: "60m+", upTo: Infinity, score: 100 },
+            ],
+          },
+          teach: {
+            label: "Teach", weight: 40,
+            type: "tiered_selector", cap: 100,
+            groups: {
+              level_a: {
+                label: "Level A",
+                tiers: [
+                  { key: "none",   label: "None",    score: 0   },
+                  { key: "30min",  label: "30 min",  score: 50  },
+                  { key: "60min",  label: "60 min",  score: 100 },
+                ],
+              },
+              level_b: {
+                label: "Level B",
+                tiers: [
+                  { key: "none",   label: "None",    score: 0   },
+                  { key: "60min",  label: "60 min",  score: 50  },
+                  { key: "120min", label: "120 min", score: 100 },
+                ],
+              },
+              camp: {
+                label: "Camp",
+                tiers: [
+                  { key: "none",   label: "None",    score: 0   },
+                  { key: "120min", label: "120min+", score: 100 },
+                ],
+              },
+            },
+          },
+          organize: {
+            label: "Organize", weight: 20,
+            type: "compound",
+            items: {
+              training_plan:     { label: "Training Plan for Students", type: "bool" },
+              prepare_materials: {
+                label: "Prepare Materials", type: "tiered_number", unit: "min",
+                tiers: [
+                  { label: "0",    upTo: 15,       score: 0   },
+                  { label: "15m",  upTo: 30,       score: 50  },
+                  { label: "30m+", upTo: Infinity, score: 100 },
+                ],
+              },
+            },
+          },
+        },
+      },
+
+      influence: {
+        label: "Influence", emoji: "ð¡", color: "#3b82f6",
+        bg: "#060f1c", border: "#0f2d52",
+        metrics: {
+          create: {
+            label: "Create", weight: 60,
+            type: "tiered_number", description: "Script / Video / Blog", unit: "min",
+            tiers: [
+              { label: "<30m", upTo: 30,       score: 0   },
+              { label: "30m",  upTo: 60,       score: 50  },
+              { label: "60m+", upTo: Infinity, score: 100 },
+            ],
+          },
+          engage: {
+            label: "Engage", weight: 30,
+            type: "tiered_number", description: "Comment / Story / Reply", unit: "min",
+            tiers: [
+              { label: "<15m", upTo: 15,       score: 0   },
+              { label: "15m",  upTo: 30,       score: 50  },
+              { label: "30m+", upTo: Infinity, score: 100 },
+            ],
+          },
+          research: {
+            label: "Research", weight: 10,
+            type: "tiered_number", description: "Research session", unit: "min",
+            tiers: [
+              { label: "<15m", upTo: 15,       score: 0   },
+              { label: "15m",  upTo: 30,       score: 30  },
+              { label: "30m",  upTo: 60,       score: 60  },
+              { label: "60m+", upTo: Infinity, score: 100 },
+            ],
+          },
+        },
+      },
+
+      grounding: {
+        label: "Grounding", emoji: "ð¿", color: "#22c55e",
+        bg: "#041208", border: "#0d3a1a",
+        metrics: {
+          family: {
+            label: "Family", weight: 60,
+            type: "tiered_number", description: "60 min target", unit: "min",
+            tiers: [
+              { label: "<30m", upTo: 30,       score: 0   },
+              { label: "30m",  upTo: 50,       score: 50  },
+              { label: "50m+", upTo: Infinity, score: 100 },
+            ],
+          },
+          self: {
+            label: "Self", weight: 30,
+            type: "tiered_number", description: "30 min target", unit: "min",
+            tiers: [
+              { label: "<15m", upTo: 15,       score: 0   },
+              { label: "15m",  upTo: 30,       score: 50  },
+              { label: "30m+", upTo: Infinity, score: 100 },
+            ],
+          },
+          friends: {
+            label: "Friends", weight: 10,
+            type: "tiered_number", description: "30 min target", unit: "min",
+            tiers: [
+              { label: "<15m", upTo: 15,       score: 0   },
+              { label: "15m",  upTo: 30,       score: 50  },
+              { label: "30m+", upTo: Infinity, score: 100 },
+            ],
+          },
+        },
+      },
+    };
+
+    // âââ Seed data ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+    const SEED_DATA = {
+      "2026-03-22": {
+        warrior:  { exercise: { morning_stretch:true, strength_training:true, cardio:false, sports:false, ankle_stretch:true }, sleep:7, protein:{ eggs:true, chicken_fish:true, protein_shake:false, mutton:false, nuts:true } },
+        mastery:  { learn:50, teach:{ level_a:"60min", level_b:"none", camp:"none" }, organize:{ training_plan:true, prepare_materials:20 } },
+        influence:{ create:45, engage:20, research:0 },
+        grounding:{ family:35, self:20, friends:0 },
+      },
+    };
+
+    const STORAGE_KEY = "four_pillars_v4";
+
+    // âââ Helpers ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+    function todayStr() { return new Date().toISOString().slice(0,10); }
+
+    function offsetDate(base, delta) {
+      const d = new Date(base + "T00:00:00");
+      d.setDate(d.getDate() + delta);
+      return d.toISOString().slice(0,10);
+    }
+
+    function last7(fromDate) {
+      return Array.from({ length:7 }, (_,i) => offsetDate(fromDate, i-6));
+    }
+
+    function scoreTieredNumber(tiers, value) {
+      const n = Number(value) || 0;
+      for (const tier of tiers) { if (n < tier.upTo) return tier.score / 100; }
+      return tiers[tiers.length-1].score / 100;
+    }
+
+    function metricScore(pillarKey, metricKey, value) {
+      const cfg = PILLARS[pillarKey].metrics[metricKey];
+      if (cfg.type === "bool") return value ? 1 : 0;
+      if (cfg.type === "weighted_checklist") {
+        if (!value) return 0;
+        const earned = Object.entries(cfg.items).reduce((s,[k,item]) => s + (value[k] ? item.points : 0), 0);
+        return Math.min(1, earned / cfg.cap);
+      }
+      if (cfg.type === "tiered_number") return scoreTieredNumber(cfg.tiers, value);
+      if (cfg.type === "tiered_selector") {
+        if (!value) return 0;
+        let total = 0;
+        for (const [gk,gcfg] of Object.entries(cfg.groups)) {
+          const sel = value[gk] ?? "none";
+          total += gcfg.tiers.find(t => t.key === sel)?.score ?? 0;
+        }
+        return Math.min(1, total / cfg.cap);
+      }
+      if (cfg.type === "compound") {
+        if (!value) return 0;
+        const scores = Object.entries(cfg.items).map(([ik,icfg]) => {
+          const v = value[ik];
+          if (icfg.type === "bool")          return v ? 1 : 0;
+          if (icfg.type === "tiered_number") return scoreTieredNumber(icfg.tiers, v);
+          return 0;
+        });
+        return scores.length ? scores.reduce((a,b)=>a+b,0) / scores.length : 0;
+      }
+      return 0;
+    }
+
+    function pillarScore(pillarKey, metrics) {
+      if (!metrics) return 0;
+      const entries = Object.entries(PILLARS[pillarKey].metrics);
+      const totalW  = entries.reduce((s,[,mc]) => s + (mc.weight ?? 1), 0);
+      const sumW    = entries.reduce((s,[mk,mc]) => s + metricScore(pillarKey, mk, metrics[mk]) * (mc.weight ?? 1), 0);
+      return totalW > 0 ? sumW / totalW : 0;
+    }
+
+    function overallScore(dateData) {
+      if (!dateData) return 0;
+      const scores = Object.keys(PILLARS).map(pk => pillarScore(pk, dateData[pk]));
+      return scores.reduce((a,b)=>a+b,0) / scores.length;
+    }
+
+    function emptyForMetric(mc) {
+      if (mc.type === "bool")               return false;
+      if (mc.type === "tiered_number")      return 0;
+      if (mc.type === "weighted_checklist") return Object.fromEntries(Object.keys(mc.items).map(k=>[k,false]));
+      if (mc.type === "tiered_selector")    return Object.fromEntries(Object.keys(mc.groups).map(gk=>[gk,"none"]));
+      if (mc.type === "compound")           return Object.fromEntries(Object.entries(mc.items).map(([ik,icfg])=>[ik,emptyForMetric(icfg)]));
+      return null;
+    }
+
+    function perfectForMetric(mc) {
+      if (mc.type === "bool") return true;
+      if (mc.type === "tiered_number") {
+        const last = mc.tiers[mc.tiers.length-1];
+        const prev = mc.tiers[mc.tiers.length-2];
+        return last.upTo === Infinity ? (prev?.upTo ?? 0) + 1 : last.upTo;
+      }
+      if (mc.type === "weighted_checklist") return Object.fromEntries(Object.keys(mc.items).map(k=>[k,true]));
+      if (mc.type === "tiered_selector")    return Object.fromEntries(Object.entries(mc.groups).map(([gk,gcfg])=>{
+        const best = gcfg.tiers.reduce((b,t)=>t.score>b.score?t:b, gcfg.tiers[0]);
+        return [gk, best.key];
+      }));
+      if (mc.type === "compound") return Object.fromEntries(Object.entries(mc.items).map(([ik,icfg])=>[ik,perfectForMetric(icfg)]));
+      return null;
+    }
+
+    function emptyDayMetrics() {
+      const day = {};
+      for (const [pk,pc] of Object.entries(PILLARS)) {
+        day[pk] = {};
+        for (const [mk,mc] of Object.entries(pc.metrics)) day[pk][mk] = emptyForMetric(mc);
+      }
+      return day;
+    }
+
+    function perfectDayMetrics() {
+      const day = {};
+      for (const [pk,pc] of Object.entries(PILLARS)) {
+        day[pk] = {};
+        for (const [mk,mc] of Object.entries(pc.metrics)) day[pk][mk] = perfectForMetric(mc);
+      }
+      return day;
+    }
+
+    function loadData() {
+      try { const raw = localStorage.getItem(STORAGE_KEY); if (raw) return JSON.parse(raw); } catch(_) {}
+      return { ...SEED_DATA };
+    }
+
+    function saveData(d) {
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(d)); } catch(_) {}
+    }
+
+    function fmtDate(s) {
+      return new Date(s+"T00:00:00").toLocaleDateString("en-US", { weekday:"short", month:"short", day:"numeric" });
+    }
+
+    function scoreColor(pct) {
+      if (pct >= 90) return "#22c55e";
+      if (pct >= 80) return "#f97316";
+      if (pct >= 70) return "#eab308";
+      if (pct > 0)   return "#ef4444";
+      return "#374151";
+    }
+
+    function scoreGlow(pct) {
+      return pct >= 100 ? "drop-shadow(0 0 8px #22c55e) drop-shadow(0 0 3px #22c55ecc)" : "none";
+    }
+
+    // âââ Ring âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+    function Ring({ pct, color, size=72, stroke=7, glow=false, children }) {
+      const r = (size - stroke*2) / 2;
+      const circ = 2*Math.PI*r;
+      const filled = Math.min(1, Math.max(0, pct)) * circ;
+      return (
+        <svg width={size} height={size}
+          style={{ display:"block", flexShrink:0, filter: glow ? scoreGlow(100) : "none", transition:"filter 0.4s ease" }}>
+          <circle cx={size/2} cy={size/2} r={r} fill="none" stroke="#1f2937" strokeWidth={stroke} />
+          <circle cx={size/2} cy={size/2} r={r} fill="none" stroke={color} strokeWidth={stroke}
+            strokeDasharray={`${filled} ${circ}`} strokeLinecap="round"
+            transform={`rotate(-90 ${size/2} ${size/2})`}
+            style={{ transition:"stroke-dasharray 0.5s ease" }} />
+          <foreignObject x={0} y={0} width={size} height={size}>
+            <div xmlns="http://www.w3.org/1999/xhtml"
+              style={{ display:"flex", alignItems:"center", justifyContent:"center", width:"100%", height:"100%", textAlign:"center" }}>
+              {children}
+            </div>
+          </foreignObject>
+        </svg>
+      );
+    }
+
+    // âââ TrendBars ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+    function TrendBars({ values, color }) {
+      const max = Math.max(...values, 0.01);
+      return (
+        <div style={{ display:"flex", alignItems:"flex-end", gap:2, height:28 }}>
+          {values.map((v,i) => (
+            <div key={i} style={{
+              flex:1, height: Math.max(3,(v/max)*28), background:color, borderRadius:3,
+              opacity: 0.25 + 0.09*i + (i===values.length-1 ? 0.32:0), transition:"height 0.4s ease",
+            }} />
+          ))}
+        </div>
+      );
+    }
+
+    // âââ Toggle âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+    function Toggle({ value, onChange, color }) {
+      return (
+        <button onClick={e=>{ e.stopPropagation(); onChange(!value); }}
+          style={{ width:44, height:24, borderRadius:12, background: value ? color : "#374151",
+                   border:"none", cursor:"pointer", display:"flex", alignItems:"center", padding:"0 3px",
+                   justifyContent: value ? "flex-end" : "flex-start", transition:"background 0.2s", flexShrink:0 }}>
+          <div style={{ width:18, height:18, borderRadius:"50%", background:"#fff", boxShadow:"0 1px 3px rgba(0,0,0,0.4)" }} />
+        </button>
+      );
+    }
+
+    // âââ Bool Row âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+    function BoolRow({ pillarKey, meta, value, onChange }) {
+      const { color } = PILLARS[pillarKey];
+      const done = !!value;
+      return (
+        <div onClick={() => onChange(!done)}
+          style={{ display:"flex", alignItems:"center", justifyContent:"space-between",
+                   padding:"11px 0", borderBottom:"1px solid rgba(255,255,255,0.05)",
+                   cursor:"pointer", userSelect:"none" }}>
+          <div style={{ display:"flex", alignItems:"center", gap:10 }}>
+            <div style={{ width:20, height:20, borderRadius:6, border:`2px solid ${done ? color : "#374151"}`,
+                          background: done ? color+"33" : "transparent",
+                          display:"flex", alignItems:"center", justifyContent:"center",
+                          flexShrink:0, transition:"all 0.15s" }}>
+              {done && <span style={{ color, fontSize:12, lineHeight:1 }}>â</span>}
+            </div>
+            <span style={{ color: done ? "#fff" : "#9ca3af", fontSize:14, transition:"color 0.15s" }}>{meta.label}</span>
+          </div>
+          <Toggle value={done} onChange={onChange} color={color} />
+        </div>
+      );
+    }
+
+    // âââ Weighted Checklist âââââââââââââââââââââââââââââââââââââââââââââââââââ
+    function WeightedChecklist({ pillarKey, cfg, value, onChange }) {
+      const { color } = PILLARS[pillarKey];
+      const earned = value ? Object.entries(cfg.items).reduce((s,[k,item]) => s+(value[k]?item.points:0), 0) : 0;
+      const pct = Math.min(100, Math.round((earned/cfg.cap)*100));
+      const u = cfg.displayUnit;
+      return (
+        <div>
+          <div style={{ display:"flex", justifyContent:"space-between", marginBottom:6 }}>
+            <span style={{ color:"#6b7280", fontSize:12 }}>{cfg.description}</span>
+            <span style={{ fontWeight:700, fontSize:13, color: pct>=100 ? color : "#9ca3af" }}>
+              {earned}{u}<span style={{ color:"#4b5563", fontWeight:400 }}> / {cfg.cap}{u}</span>
+            </span>
+          </div>
+          <div style={{ height:5, background:"#1f2937", borderRadius:3, overflow:"hidden", marginBottom:10 }}>
+            <div style={{ height:"100%", width:`${pct}%`, background: pct>=100 ? color : color+"bb",
+                          borderRadius:3, transition:"width 0.35s" }} />
+          </div>
+          {Object.entries(cfg.items).map(([k,item]) => {
+            const checked = value?.[k] ?? false;
+            return (
+              <div key={k} onClick={() => onChange({ ...(value||{}), [k]: !checked })}
+                style={{ display:"flex", alignItems:"center", justifyContent:"space-between",
+                         padding:"9px 0", borderBottom:"1px solid rgba(255,255,255,0.04)",
+                         cursor:"pointer", userSelect:"none" }}>
+                <div style={{ display:"flex", alignItems:"center", gap:10 }}>
+                  <div style={{ width:18, height:18, borderRadius:5, border:`2px solid ${checked ? color : "#374151"}`,
+                                background: checked ? color+"33" : "transparent",
+                                display:"flex", alignItems:"center", justifyContent:"center",
+                                flexShrink:0, transition:"all 0.15s" }}>
+                    {checked && <span style={{ color, fontSize:11, lineHeight:1 }}>â</span>}
+                  </div>
+                  <span style={{ color: checked ? "#e5e7eb" : "#9ca3af", fontSize:13 }}>{item.label}</span>
+                </div>
+                <span style={{ color: checked ? color : "#4b5563", fontSize:12, fontWeight:700,
+                               background: checked ? color+"15" : "transparent",
+                               padding:"2px 8px", borderRadius:6, transition:"all 0.15s" }}>
+                  +{item.points}{u}
+                </span>
+              </div>
+            );
+          })}
+        </div>
+      );
+    }
+
+    // âââ Tiered Number Input ââââââââââââââââââââââââââââââââââââââââââââââââââ
+    function TieredInput({ pillarKey, cfg, value, onChange, compact=false }) {
+      const { color } = PILLARS[pillarKey];
+      const n = Number(value) || 0;
+      let tierIdx = cfg.tiers.length-1;
+      for (let i=0; i<cfg.tiers.length; i++) { if (n < cfg.tiers[i].upTo) { tierIdx=i; break; } }
+      const currentScore = cfg.tiers[tierIdx].score;
+      const scoreHue = currentScore > 0 ? scoreColor(currentScore) : "#6b7280";
+      const tierCenters = cfg.tiers.map((tier,i) =>
+        tier.upTo === Infinity ? (cfg.tiers[i-1]?.upTo ?? 0)+1 : ((cfg.tiers[i-1]?.upTo ?? 0)+tier.upTo)/2
+      );
+      const isHrs = cfg.unit === "hrs";
+      return (
+        <div>
+          {!compact && (
+            <div style={{ display:"flex", alignItems:"center", gap:14, marginBottom:14 }}>
+              <div style={{ position:"relative" }}>
+                <input type="number" min={0} max={isHrs?12:180} step={isHrs?0.5:5}
+                  value={n||""} placeholder="0"
+                  onChange={e => onChange(Number(e.target.value)||0)}
+                  style={{ width:68, background:"#111827", border:`1px solid ${currentScore>=50?color:"#374151"}`,
+                           borderRadius:12, padding:"10px 8px", color:"#fff",
+                           fontSize:22, textAlign:"center", outline:"none", fontWeight:700, transition:"border-color 0.2s" }} />
+                <span style={{ position:"absolute", bottom:-14, left:0, right:0,
+                               textAlign:"center", color:"#6b7280", fontSize:10 }}>{cfg.unit}</span>
+              </div>
+              <div>
+                <div style={{ fontSize:28, fontWeight:800, lineHeight:1, color:scoreHue, transition:"color 0.2s",
+                              textShadow: currentScore>=100 ? `0 0 12px ${scoreHue}` : "none" }}>{currentScore}</div>
+                <div style={{ color:"#6b7280", fontSize:11, marginTop:2 }}>/ 100 pts</div>
+              </div>
+              <div style={{ flex:1 }}>
+                {cfg.description && <div style={{ color:"#9ca3af", fontSize:11, marginBottom:4 }}>{cfg.description}</div>}
+                <div style={{ height:5, background:"#1f2937", borderRadius:3, overflow:"hidden" }}>
+                  <div style={{ height:"100%", width:`${currentScore}%`, background:scoreHue, borderRadius:3, transition:"width 0.4s" }} />
+                </div>
+              </div>
+            </div>
+          )}
+          {compact && (
+            <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:10 }}>
+              <input type="number" min={0} max={isHrs?12:180} step={isHrs?0.5:5}
+                value={n||""} placeholder="0"
+                onChange={e => onChange(Number(e.target.value)||0)}
+                style={{ width:56, background:"#111827", border:`1px solid ${currentScore>=50?color:"#374151"}`,
+                         borderRadius:8, padding:"6px", color:"#fff",
+                         fontSize:16, textAlign:"center", outline:"none", fontWeight:700 }} />
+              <span style={{ color:"#6b7280", fontSize:11 }}>{cfg.unit}</span>
+              <div style={{ flex:1, height:5, background:"#1f2937", borderRadius:3, overflow:"hidden" }}>
+                <div style={{ height:"100%", width:`${currentScore}%`, background:scoreHue, borderRadius:3, transition:"width 0.4s" }} />
+              </div>
+              <span style={{ color:scoreHue, fontWeight:700, fontSize:13, minWidth:36, textAlign:"right" }}>{currentScore}pts</span>
+            </div>
+          )}
+          <div style={{ display:"flex", gap:4 }}>
+            {cfg.tiers.map((tier,i) => {
+              const active = tierIdx===i;
+              return (
+                <button key={i} onClick={() => onChange(tierCenters[i])}
+                  style={{ flex:1, padding:"7px 2px", borderRadius:8,
+                           border:`1px solid ${active?color:"#1f2937"}`,
+                           background: active ? color+"22" : "#0f172a",
+                           cursor:"pointer", transition:"all 0.15s" }}>
+                  <div style={{ color: active?color:"#6b7280", fontSize:10, fontWeight:600, marginBottom:1 }}>{tier.label}</div>
+                  <div style={{ color: active?color:"#4b5563", fontSize:11, fontWeight:700 }}>{tier.score}</div>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      );
+    }
+
+    // âââ Tiered Selector âââââââââââââââââââââââââââââââââââââââââââââââââââââ
+    function TieredSelector({ pillarKey, cfg, value, onChange }) {
+      const { color } = PILLARS[pillarKey];
+      let totalScore = 0;
+      for (const [gk,gcfg] of Object.entries(cfg.groups)) {
+        const sel = value?.[gk] ?? "none";
+        totalScore += gcfg.tiers.find(t => t.key===sel)?.score ?? 0;
+      }
+      const pct = Math.min(100, Math.round((totalScore/cfg.cap)*100));
+      return (
+        <div>
+          <div style={{ display:"flex", justifyContent:"space-between", marginBottom:6 }}>
+            <span style={{ color:"#6b7280", fontSize:12 }}>Session score</span>
+            <span style={{ fontWeight:700, fontSize:13, color: pct>=100?color:"#9ca3af" }}>
+              {Math.min(totalScore,cfg.cap)}pts<span style={{ color:"#4b5563", fontWeight:400 }}> / {cfg.cap}pts</span>
+            </span>
+          </div>
+          <div style={{ height:5, background:"#1f2937", borderRadius:3, overflow:"hidden", marginBottom:14 }}>
+            <div style={{ height:"100%", width:`${pct}%`, background: pct>=100?color:color+"bb",
+                          borderRadius:3, transition:"width 0.35s" }} />
+          </div>
+          {Object.entries(cfg.groups).map(([gk,gcfg]) => {
+            const selected = value?.[gk] ?? "none";
+            return (
+              <div key={gk} style={{ marginBottom:10 }}>
+                <div style={{ color:"#9ca3af", fontSize:11, fontWeight:600,
+                              textTransform:"uppercase", letterSpacing:0.4, marginBottom:6 }}>{gcfg.label}</div>
+                <div style={{ display:"flex", gap:4 }}>
+                  {gcfg.tiers.map(tier => {
+                    const active = selected===tier.key;
+                    return (
+                      <button key={tier.key} onClick={() => onChange({ ...(value||{}), [gk]:tier.key })}
+                        style={{ flex: tier.key==="none" ? "0 0 44px" : 1, padding:"7px 6px", borderRadius:8,
+                                 border:`1px solid ${active?color:"#1f2937"}`,
+                                 background: active ? color+"22" : "#0f172a",
+                                 cursor:"pointer", transition:"all 0.15s" }}>
+                        {tier.key==="none" ? (
+                          <span style={{ color: active?color:"#374151", fontSize:14 }}>â</span>
+                        ) : (
+                          <>
+                            <div style={{ color: active?color:"#9ca3af", fontSize:11, fontWeight:600, marginBottom:1 }}>{tier.label}</div>
+                            <div style={{ color: active?color:"#4b5563", fontSize:11, fontWeight:700 }}>{tier.score}pts</div>
+                          </>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      );
+    }
+
+    // âââ Compound Metric ââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+    function CompoundMetric({ pillarKey, cfg, value, onChange }) {
+      const { color } = PILLARS[pillarKey];
+      const subScores = Object.entries(cfg.items).map(([ik,icfg]) => {
+        const v = value?.[ik];
+        if (icfg.type==="bool")          return v ? 1 : 0;
+        if (icfg.type==="tiered_number") return scoreTieredNumber(icfg.tiers, v);
+        return 0;
+      });
+      const avgPct = subScores.length ? Math.round(subScores.reduce((a,b)=>a+b,0)/subScores.length*100) : 0;
+      return (
+        <div>
+          <div style={{ height:5, background:"#1f2937", borderRadius:3, overflow:"hidden", marginBottom:12 }}>
+            <div style={{ height:"100%", width:`${avgPct}%`, background:color, borderRadius:3, transition:"width 0.35s" }} />
+          </div>
+          {Object.entries(cfg.items).map(([ik,icfg],idx,arr) => {
+            const v = value?.[ik];
+            const isLast = idx===arr.length-1;
+            if (icfg.type==="bool") {
+              const done = !!v;
+              return (
+                <div key={ik} onClick={() => onChange({ ...(value||{}), [ik]:!done })}
+                  style={{ display:"flex", alignItems:"center", justifyContent:"space-between",
+                           padding:"10px 0", cursor:"pointer", userSelect:"none",
+                           borderBottom: isLast?"none":"1px solid rgba(255,255,255,0.05)" }}>
+                  <div style={{ display:"flex", alignItems:"center", gap:10 }}>
+                    <div style={{ width:18, height:18, borderRadius:5, border:`2px solid ${done?color:"#374151"}`,
+                                  background: done?color+"33":"transparent",
+                                  display:"flex", alignItems:"center", justifyContent:"center",
+                                  flexShrink:0, transition:"all 0.15s" }}>
+                      {done && <span style={{ color, fontSize:11, lineHeight:1 }}>â</span>}
+                    </div>
+                    <span style={{ color: done?"#e5e7eb":"#9ca3af", fontSize:13 }}>{icfg.label}</span>
+                  </div>
+                  <Toggle value={done} onChange={val => onChange({ ...(value||{}), [ik]:val })} color={color} />
+                </div>
+              );
+            }
+            if (icfg.type==="tiered_number") {
+              return (
+                <div key={ik} style={{ paddingTop:10 }}>
+                  <div style={{ color:"#e5e7eb", fontSize:13, fontWeight:500, marginBottom:8 }}>{icfg.label}</div>
+                  <TieredInput pillarKey={pillarKey} cfg={{ ...icfg, description:"" }}
+                    value={v??0} onChange={val => onChange({ ...(value||{}), [ik]:val })} compact={true} />
+                </div>
+              );
+            }
+            return null;
+          })}
+        </div>
+      );
+    }
+
+    // âââ Pillar Section âââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+    function PillarSection({ pillarKey, metrics, onChange }) {
+      const [open, setOpen] = useState(true);
+      const cfg = PILLARS[pillarKey];
+      const pct = Math.round(pillarScore(pillarKey, metrics) * 100);
+      return (
+        <div style={{ background:cfg.bg, border:`1px solid ${cfg.border}`, borderRadius:16, overflow:"hidden", marginBottom:12 }}>
+          <button onClick={() => setOpen(o=>!o)} style={{
+            width:"100%", display:"flex", alignItems:"center", justifyContent:"space-between",
+            padding:"14px 16px", background:"transparent", border:"none", cursor:"pointer" }}>
+            <div style={{ display:"flex", alignItems:"center", gap:12 }}>
+              <span style={{ fontSize:22 }}>{cfg.emoji}</span>
+              <div style={{ textAlign:"left" }}>
+                <div style={{ color:"#fff", fontWeight:600, fontSize:14 }}>{cfg.label}</div>
+                <div style={{ color:cfg.color, fontSize:11, marginTop:1 }}>{pct}% today</div>
+              </div>
+            </div>
+            <div style={{ display:"flex", alignItems:"center", gap:10 }}>
+              <div style={{ width:80, height:6, background:"#1f2937", borderRadius:3, overflow:"hidden" }}>
+                <div style={{ height:"100%", width:`${pct}%`, background:cfg.color, borderRadius:3, transition:"width 0.4s" }} />
+              </div>
+              <span style={{ color:"#6b7280", fontSize:12 }}>{open?"â²":"â¼"}</span>
+            </div>
+          </button>
+          {open && (
+            <div style={{ padding:"0 16px 14px" }}>
+              {Object.entries(cfg.metrics).map(([mk,mc],idx,arr) => {
+                const isLast = idx===arr.length-1;
+                const wrap = isLast ? {} : { borderBottom:"1px solid rgba(255,255,255,0.06)", marginBottom:14, paddingBottom:14 };
+                const mPct = Math.round(metricScore(pillarKey, mk, metrics?.[mk]) * 100);
+                const wtLabel = mc.weight != null ? `Ã${mc.weight}` : "";
+                const header = (
+                  <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:8 }}>
+                    <div style={{ display:"flex", alignItems:"center", gap:6 }}>
+                      <span style={{ color:"#e5e7eb", fontWeight:600, fontSize:13 }}>{mc.label}</span>
+                      {wtLabel && (
+                        <span style={{ color:cfg.color, fontSize:10, fontWeight:700,
+                                       background:cfg.color+"18", padding:"1px 5px", borderRadius:4 }}>{wtLabel}</span>
+                      )}
+                    </div>
+                    <span style={{ color: mPct>=100?cfg.color:"#6b7280", fontSize:11 }}>{mPct}%</span>
+                  </div>
+                );
+                if (mc.type==="bool") return (
+                  <div key={mk} style={wrap}>
+                    <BoolRow pillarKey={pillarKey} meta={mc} value={metrics?.[mk]??false} onChange={val=>onChange(pillarKey,mk,val)} />
+                  </div>
+                );
+                if (mc.type==="weighted_checklist") return (
+                  <div key={mk} style={wrap}>{header}
+                    <WeightedChecklist pillarKey={pillarKey} cfg={mc} value={metrics?.[mk]??null} onChange={val=>onChange(pillarKey,mk,val)} />
+                  </div>
+                );
+                if (mc.type==="tiered_number") return (
+                  <div key={mk} style={wrap}>{header}
+                    <TieredInput pillarKey={pillarKey} cfg={mc} value={metrics?.[mk]??0} onChange={val=>onChange(pillarKey,mk,val)} />
+                  </div>
+                );
+                if (mc.type==="tiered_selector") return (
+                  <div key={mk} style={wrap}>{header}
+                    <TieredSelector pillarKey={pillarKey} cfg={mc} value={metrics?.[mk]??null} onChange={val=>onChange(pillarKey,mk,val)} />
+                  </div>
+                );
+                if (mc.type==="compound") return (
+                  <div key={mk} style={wrap}>{header}
+                    <CompoundMetric pillarKey={pillarKey} cfg={mc} value={metrics?.[mk]??null} onChange={val=>onChange(pillarKey,mk,val)} />
+                  </div>
+                );
+                return null;
+              })}
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    // âââ Pillar Card ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+    function PillarCard({ pillarKey, score, trendValues, onTrack }) {
+      const cfg = PILLARS[pillarKey];
+      const pct = Math.round(score * 100);
+      const sc  = scoreColor(pct);
+      return (
+        <div style={{ background:cfg.bg, border:`1px solid ${cfg.border}`, borderRadius:16, padding:16 }}>
+          <div style={{ display:"flex", alignItems:"center", gap:12, marginBottom:12 }}>
+            <Ring pct={score} color={sc} size={56} stroke={6} glow={pct>=100}>
+              <span style={{ fontSize:18 }}>{cfg.emoji}</span>
+            </Ring>
+            <div>
+              <div style={{ color:"#9ca3af", fontSize:11 }}>{cfg.label}</div>
+              <div style={{ color:sc, fontWeight:700, fontSize:22, lineHeight:1.1,
+                            textShadow: pct>=100 ? `0 0 10px ${sc}` : "none" }}>{pct}%</div>
+            </div>
+          </div>
+          <TrendBars values={trendValues} color={cfg.color} />
+          <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginTop:8 }}>
+            <span style={{ color:"#6b7280", fontSize:11 }}>7-day</span>
+            <button onClick={onTrack} style={{ background:cfg.color+"22", color:cfg.color,
+              border:`1px solid ${cfg.color}44`, borderRadius:8, padding:"3px 10px", fontSize:11, cursor:"pointer" }}>Log â</button>
+          </div>
+        </div>
+      );
+    }
+
+    // âââ App ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+    function FourPillarsApp() {
+      const [data, setData]   = useState(() => loadData());
+      const [date, setDate]   = useState(todayStr());
+      const [tab, setTab]     = useState("dashboard");
+      const [saved, setSaved] = useState(false);
+
+      useEffect(() => { saveData(data); }, [data]);
+
+      const days7      = useMemo(() => last7(date), [date]);
+      const dayData    = data[date] ?? null;
+      const isToday    = date === todayStr();
+      const totalScore = useMemo(() => overallScore(dayData), [dayData]);
+      const totalPct   = Math.round(totalScore * 100);
+
+      function updateMetric(pillarKey, metricKey, value) {
+        setData(prev => {
+          const existing = prev[date] ?? emptyDayMetrics();
+          return { ...prev, [date]: { ...existing, [pillarKey]: { ...existing[pillarKey], [metricKey]: value } } };
+        });
+        setSaved(false);
+      }
+
+      function handleSave() { saveData(data); setSaved(true); setTimeout(()=>setSaved(false), 2000); }
+
+      const tabBtn = (active) => ({
+        flex:1, padding:"7px 0", borderRadius:9, border:"none",
+        background: active ? "#1e293b" : "transparent",
+        color: active ? "#fff" : "#6b7280",
+        fontSize:13, fontWeight: active?600:400, cursor:"pointer", transition:"all 0.15s",
+      });
+
+      return (
+        <div style={{ minHeight:"100vh", background:"#030712", color:"#fff",
+                      fontFamily:"system-ui,-apple-system,sans-serif", paddingBottom:64 }}>
+
+          {/* Header */}
+          <div style={{ position:"sticky", top:0, zIndex:20, background:"rgba(3,7,18,0.97)",
+                        backdropFilter:"blur(12px)", borderBottom:"1px solid #1f2937", padding:"12px 16px",
+                        paddingTop:"max(12px, env(safe-area-inset-top))" }}>
+            <div style={{ maxWidth:520, margin:"0 auto" }}>
+              <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:10 }}>
+                <div>
+                  <div style={{ color:"#fff", fontWeight:700, fontSize:17, letterSpacing:-0.3 }}>4 Pillars</div>
+                  <div style={{ color:"#4b5563", fontSize:11 }}>Command Center</div>
+                </div>
+                <div style={{ display:"flex", background:"#0f172a", borderRadius:12, padding:4, gap:2 }}>
+                  <button style={tabBtn(tab==="dashboard")} onClick={()=>setTab("dashboard")}>Dashboard</button>
+                  <button style={tabBtn(tab==="tracker")}   onClick={()=>setTab("tracker")}>Daily Log</button>
+                </div>
+              </div>
+              <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between",
+                            background:"#0f172a", borderRadius:12, padding:"8px 14px" }}>
+                <button onClick={() => setDate(d=>offsetDate(d,-1))}
+                  style={{ background:"none", border:"none", color:"#9ca3af", fontSize:20, cursor:"pointer", padding:"0 4px", lineHeight:1 }}>â¹</button>
+                <div style={{ textAlign:"center" }}>
+                  <div style={{ color:"#fff", fontWeight:600, fontSize:13 }}>{fmtDate(date)}</div>
+                  <div style={{ fontSize:10, marginTop:1, color: isToday?"#22c55e":"#6b7280" }}>
+                    {isToday ? "â Today" : "Past entry"}
+                  </div>
+                </div>
+                <button onClick={() => setDate(d=>offsetDate(d,1))} disabled={isToday}
+                  style={{ background:"none", border:"none", fontSize:20, padding:"0 4px", lineHeight:1,
+                           color: isToday?"#1f2937":"#9ca3af", cursor: isToday?"default":"pointer" }}>âº</button>
+              </div>
+            </div>
+          </div>
+
+          {/* Dashboard */}
+          {tab==="dashboard" && (
+            <div style={{ maxWidth:520, margin:"0 auto", padding:"16px 16px 0" }}>
+              <div style={{ background:"#0a0f1e", border:"1px solid #1e2d45", borderRadius:20,
+                            padding:20, marginBottom:16, display:"flex", alignItems:"center", gap:16 }}>
+                <Ring pct={totalScore} color={scoreColor(totalPct)} size={80} stroke={8} glow={totalPct>=100}>
+                  <div style={{ textAlign:"center" }}>
+                    <div style={{ color:"#fff", fontWeight:700, fontSize:16, lineHeight:1 }}>{totalPct}</div>
+                    <div style={{ color:"#9ca3af", fontSize:9 }}>%</div>
+                  </div>
+                </Ring>
+                <div style={{ flex:1 }}>
+                  <div style={{ color:"#9ca3af", fontSize:11, marginBottom:2 }}>Meta Score</div>
+                  <div style={{ color:scoreColor(totalPct), fontWeight:700, fontSize:26, lineHeight:1,
+                                textShadow: totalPct>=100 ? "0 0 10px #22c55e":"none" }}>{totalPct}%</div>
+                  <div style={{ color:"#6b7280", fontSize:12, marginTop:4 }}>
+                    {totalPct>=80?"ð¥ Locked in":totalPct>=55?"ðª Keep pushing":totalPct>0?"ð Room to grow":"â Log today"}
+                  </div>
+                </div>
+                <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:6 }}>
+                  {Object.entries(PILLARS).map(([pk,pc]) => (
+                    <div key={pk} style={{ display:"flex", alignItems:"center", gap:4 }}>
+                      <div style={{ width:6, height:6, borderRadius:"50%", background:pc.color, flexShrink:0 }} />
+                      <span style={{ color:"#9ca3af", fontSize:11 }}>
+                        {Math.round(pillarScore(pk, dayData?.[pk])*100)}%
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:12, marginBottom:16 }}>
+                {Object.keys(PILLARS).map(pk => (
+                  <PillarCard key={pk} pillarKey={pk}
+                    score={pillarScore(pk, dayData?.[pk])}
+                    trendValues={days7.map(d => pillarScore(pk, data[d]?.[pk]))}
+                    onTrack={() => setTab("tracker")} />
+                ))}
+              </div>
+
+              <div style={{ background:"#070d1a", border:"1px solid #1e2937", borderRadius:16, padding:16 }}>
+                <div style={{ color:"#6b7280", fontSize:11, fontWeight:600,
+                              textTransform:"uppercase", letterSpacing:0.5, marginBottom:12 }}>7-Day</div>
+                <div style={{ display:"grid", gridTemplateColumns:"repeat(7,1fr)", gap:4 }}>
+                  {days7.map(d => {
+                    const sc  = Math.round(overallScore(data[d])*100);
+                    const col = scoreColor(sc);
+                    const dn  = new Date(d+"T00:00:00").toLocaleDateString("en-US",{weekday:"narrow"});
+                    const sel = d===date;
+                    return (
+                      <button key={d} onClick={() => setDate(d)}
+                        style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:4,
+                                 padding:"6px 2px", borderRadius:10, border:"none",
+                                 background: sel?"#1e2937":"transparent", cursor:"pointer" }}>
+                        <span style={{ color:"#6b7280", fontSize:10 }}>{dn}</span>
+                        <div style={{ width:32, height:32, borderRadius:"50%",
+                                      display:"flex", alignItems:"center", justifyContent:"center",
+                                      background:col+"22", border:`2px solid ${sel?col:"transparent"}`,
+                                      color:col, fontSize:10, fontWeight:700 }}>
+                          {sc>0 ? sc : "â"}
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Daily Log */}
+          {tab==="tracker" && (
+            <div style={{ maxWidth:520, margin:"0 auto", padding:"16px 16px 0" }}>
+              <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:14 }}>
+                <div>
+                  <div style={{ color:"#fff", fontWeight:700, fontSize:16 }}>Daily Log</div>
+                  <div style={{ color:"#6b7280", fontSize:12 }}>{fmtDate(date)}</div>
+                </div>
+                <button onClick={handleSave} style={{
+                  background: saved?"#22c55e22":"#1e293b",
+                  border:`1px solid ${saved?"#22c55e":"#374151"}`,
+                  color: saved?"#22c55e":"#9ca3af",
+                  borderRadius:10, padding:"6px 16px", fontSize:13, fontWeight:600, cursor:"pointer", transition:"all 0.2s",
+                }}>{saved?"â Saved":"Save"}</button>
+              </div>
+
+              <div style={{ background:"#0f172a", border:"1px solid #1e2937",
+                            borderRadius:12, padding:"12px 14px", marginBottom:16 }}>
+                <div style={{ display:"flex", justifyContent:"space-between", marginBottom:8 }}>
+                  <span style={{ color:"#9ca3af", fontSize:12 }}>Daily Completion</span>
+                  <span style={{ color:"#fff", fontWeight:700, fontSize:14 }}>{totalPct}%</span>
+                </div>
+                <div style={{ height:8, background:"#1f2937", borderRadius:4, overflow:"hidden" }}>
+                  <div style={{ height:"100%", width:`${totalPct}%`,
+                                background:"linear-gradient(90deg,#ef4444,#a855f7,#3b82f6,#22c55e)",
+                                borderRadius:4, transition:"width 0.5s ease" }} />
+                </div>
+                <div style={{ display:"flex", gap:12, marginTop:12, justifyContent:"center" }}>
+                  {Object.entries(PILLARS).map(([pk,pc]) => {
+                    const sc = Math.round(pillarScore(pk, data[date]?.[pk])*100);
+                    return (
+                      <div key={pk} style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:4 }}>
+                        <Ring pct={sc/100} color={scoreColor(sc)} size={40} stroke={4} glow={sc>=100}>
+                          <span style={{ fontSize:13 }}>{pc.emoji}</span>
+                        </Ring>
+                        <span style={{ fontSize:10, color:scoreColor(sc) }}>{sc}%</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {Object.keys(PILLARS).map(pk => (
+                <PillarSection key={pk} pillarKey={pk}
+                  metrics={data[date]?.[pk] ?? null}
+                  onChange={updateMetric} />
+              ))}
+
+              <div style={{ background:"#0a0f1c", border:"1px solid #1e2937",
+                            borderRadius:12, padding:"12px 14px", marginTop:4 }}>
+                <div style={{ color:"#6b7280", fontSize:11, fontWeight:600,
+                              textTransform:"uppercase", letterSpacing:0.5, marginBottom:10 }}>Quick Fill</div>
+                <div style={{ display:"flex", gap:8 }}>
+                  <button onClick={() => setData(prev => ({ ...prev, [date]:perfectDayMetrics() }))}
+                    style={{ flex:1, background:"#1e293b", border:"1px solid #374151",
+                             color:"#9ca3af", borderRadius:8, padding:"7px 0", fontSize:12, cursor:"pointer" }}>â Perfect Day</button>
+                  <button onClick={() => setData(prev => ({ ...prev, [date]:emptyDayMetrics() }))}
+                    style={{ flex:1, background:"#1e293b", border:"1px solid #374151",
+                             color:"#9ca3af", borderRadius:8, padding:"7px 0", fontSize:12, cursor:"pointer" }}>ð Clear Day</button>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    // Mount
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<FourPillarsApp />);
+  </script>
+
+  <!-- Service Worker registration -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').catch(() => {});
+      });
+    }
+  </script>
+</body>
+</html>
