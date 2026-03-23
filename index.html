@@ -30,8 +30,8 @@
 <body>
   <div id="root">
     <div id="loading">
-      <div class="emoji">âï¸</div>
-      <div class="text">Loading 4 Pillarsâ¦</div>
+      <div class="emoji">⚔️</div>
+      <div class="text">Loading 4 Pillars…</div>
     </div>
   </div>
 
@@ -43,11 +43,11 @@
   <script type="text/babel">
     const { useState, useEffect, useMemo } = React;
 
-    // âââ Pillar Config ââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+    // ─── Pillar Config ────────────────────────────────────────────────────────
     const PILLARS = {
 
       warrior: {
-        label: "Warrior", emoji: "âï¸", color: "#ef4444",
+        label: "Warrior", emoji: "⚔️", color: "#ef4444",
         bg: "#1c0a0a", border: "#3f1515",
         metrics: {
           exercise: {
@@ -66,9 +66,9 @@
             type: "tiered_number", description: "7+ hours", unit: "hrs",
             tiers: [
               { label: "<4h",  upTo: 4,        score: 0   },
-              { label: "4â6h", upTo: 6,        score: 50  },
-              { label: "6â7h", upTo: 7,        score: 80  },
-              { label: "7â8h", upTo: 8,        score: 90  },
+              { label: "4–6h", upTo: 6,        score: 50  },
+              { label: "6–7h", upTo: 7,        score: 80  },
+              { label: "7–8h", upTo: 8,        score: 90  },
               { label: "8h+",  upTo: Infinity, score: 100 },
             ],
           },
@@ -87,7 +87,7 @@
       },
 
       mastery: {
-        label: "Mastery", emoji: "ð§ ", color: "#a855f7",
+        label: "Mastery", emoji: "🧠", color: "#a855f7",
         bg: "#0f0a1c", border: "#2d1a52",
         metrics: {
           learn: {
@@ -149,7 +149,7 @@
       },
 
       influence: {
-        label: "Influence", emoji: "ð¡", color: "#3b82f6",
+        label: "Influence", emoji: "📡", color: "#3b82f6",
         bg: "#060f1c", border: "#0f2d52",
         metrics: {
           create: {
@@ -184,7 +184,7 @@
       },
 
       grounding: {
-        label: "Grounding", emoji: "ð¿", color: "#22c55e",
+        label: "Grounding", emoji: "🌿", color: "#22c55e",
         bg: "#041208", border: "#0d3a1a",
         metrics: {
           family: {
@@ -218,7 +218,7 @@
       },
     };
 
-    // âââ Seed data ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+    // ─── Seed data ────────────────────────────────────────────────────────────
     const SEED_DATA = {
       "2026-03-22": {
         warrior:  { exercise: { morning_stretch:true, strength_training:true, cardio:false, sports:false, ankle_stretch:true }, sleep:7, protein:{ eggs:true, chicken_fish:true, protein_shake:false, mutton:false, nuts:true } },
@@ -230,7 +230,7 @@
 
     const STORAGE_KEY = "four_pillars_v4";
 
-    // âââ Helpers ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+    // ─── Helpers ──────────────────────────────────────────────────────────────
     function todayStr() { return new Date().toISOString().slice(0,10); }
 
     function offsetDate(base, delta) {
@@ -362,7 +362,7 @@
       return pct >= 100 ? "drop-shadow(0 0 8px #22c55e) drop-shadow(0 0 3px #22c55ecc)" : "none";
     }
 
-    // âââ Ring âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+    // ─── Ring ─────────────────────────────────────────────────────────────────
     function Ring({ pct, color, size=72, stroke=7, glow=false, children }) {
       const r = (size - stroke*2) / 2;
       const circ = 2*Math.PI*r;
@@ -385,7 +385,7 @@
       );
     }
 
-    // âââ TrendBars ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+    // ─── TrendBars ────────────────────────────────────────────────────────────
     function TrendBars({ values, color }) {
       const max = Math.max(...values, 0.01);
       return (
@@ -400,7 +400,7 @@
       );
     }
 
-    // âââ Toggle âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+    // ─── Toggle ───────────────────────────────────────────────────────────────
     function Toggle({ value, onChange, color }) {
       return (
         <button onClick={e=>{ e.stopPropagation(); onChange(!value); }}
@@ -412,7 +412,7 @@
       );
     }
 
-    // âââ Bool Row âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+    // ─── Bool Row ─────────────────────────────────────────────────────────────
     function BoolRow({ pillarKey, meta, value, onChange }) {
       const { color } = PILLARS[pillarKey];
       const done = !!value;
@@ -426,7 +426,7 @@
                           background: done ? color+"33" : "transparent",
                           display:"flex", alignItems:"center", justifyContent:"center",
                           flexShrink:0, transition:"all 0.15s" }}>
-              {done && <span style={{ color, fontSize:12, lineHeight:1 }}>â</span>}
+              {done && <span style={{ color, fontSize:12, lineHeight:1 }}>✓</span>}
             </div>
             <span style={{ color: done ? "#fff" : "#9ca3af", fontSize:14, transition:"color 0.15s" }}>{meta.label}</span>
           </div>
@@ -435,7 +435,7 @@
       );
     }
 
-    // âââ Weighted Checklist âââââââââââââââââââââââââââââââââââââââââââââââââââ
+    // ─── Weighted Checklist ───────────────────────────────────────────────────
     function WeightedChecklist({ pillarKey, cfg, value, onChange }) {
       const { color } = PILLARS[pillarKey];
       const earned = value ? Object.entries(cfg.items).reduce((s,[k,item]) => s+(value[k]?item.points:0), 0) : 0;
@@ -465,7 +465,7 @@
                                 background: checked ? color+"33" : "transparent",
                                 display:"flex", alignItems:"center", justifyContent:"center",
                                 flexShrink:0, transition:"all 0.15s" }}>
-                    {checked && <span style={{ color, fontSize:11, lineHeight:1 }}>â</span>}
+                    {checked && <span style={{ color, fontSize:11, lineHeight:1 }}>✓</span>}
                   </div>
                   <span style={{ color: checked ? "#e5e7eb" : "#9ca3af", fontSize:13 }}>{item.label}</span>
                 </div>
@@ -481,7 +481,7 @@
       );
     }
 
-    // âââ Tiered Number Input ââââââââââââââââââââââââââââââââââââââââââââââââââ
+    // ─── Tiered Number Input ──────────────────────────────────────────────────
     function TieredInput({ pillarKey, cfg, value, onChange, compact=false }) {
       const { color } = PILLARS[pillarKey];
       const n = Number(value) || 0;
@@ -554,7 +554,7 @@
       );
     }
 
-    // âââ Tiered Selector âââââââââââââââââââââââââââââââââââââââââââââââââââââ
+    // ─── Tiered Selector ─────────────────────────────────────────────────────
     function TieredSelector({ pillarKey, cfg, value, onChange }) {
       const { color } = PILLARS[pillarKey];
       let totalScore = 0;
@@ -591,7 +591,7 @@
                                  background: active ? color+"22" : "#0f172a",
                                  cursor:"pointer", transition:"all 0.15s" }}>
                         {tier.key==="none" ? (
-                          <span style={{ color: active?color:"#374151", fontSize:14 }}>â</span>
+                          <span style={{ color: active?color:"#374151", fontSize:14 }}>✕</span>
                         ) : (
                           <>
                             <div style={{ color: active?color:"#9ca3af", fontSize:11, fontWeight:600, marginBottom:1 }}>{tier.label}</div>
@@ -609,7 +609,7 @@
       );
     }
 
-    // âââ Compound Metric ââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+    // ─── Compound Metric ──────────────────────────────────────────────────────
     function CompoundMetric({ pillarKey, cfg, value, onChange }) {
       const { color } = PILLARS[pillarKey];
       const subScores = Object.entries(cfg.items).map(([ik,icfg]) => {
@@ -639,7 +639,7 @@
                                   background: done?color+"33":"transparent",
                                   display:"flex", alignItems:"center", justifyContent:"center",
                                   flexShrink:0, transition:"all 0.15s" }}>
-                      {done && <span style={{ color, fontSize:11, lineHeight:1 }}>â</span>}
+                      {done && <span style={{ color, fontSize:11, lineHeight:1 }}>✓</span>}
                     </div>
                     <span style={{ color: done?"#e5e7eb":"#9ca3af", fontSize:13 }}>{icfg.label}</span>
                   </div>
@@ -662,7 +662,7 @@
       );
     }
 
-    // âââ Pillar Section âââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+    // ─── Pillar Section ───────────────────────────────────────────────────────
     function PillarSection({ pillarKey, metrics, onChange }) {
       const [open, setOpen] = useState(true);
       const cfg = PILLARS[pillarKey];
@@ -683,7 +683,7 @@
               <div style={{ width:80, height:6, background:"#1f2937", borderRadius:3, overflow:"hidden" }}>
                 <div style={{ height:"100%", width:`${pct}%`, background:cfg.color, borderRadius:3, transition:"width 0.4s" }} />
               </div>
-              <span style={{ color:"#6b7280", fontSize:12 }}>{open?"â²":"â¼"}</span>
+              <span style={{ color:"#6b7280", fontSize:12 }}>{open?"▲":"▼"}</span>
             </div>
           </button>
           {open && (
@@ -692,7 +692,7 @@
                 const isLast = idx===arr.length-1;
                 const wrap = isLast ? {} : { borderBottom:"1px solid rgba(255,255,255,0.06)", marginBottom:14, paddingBottom:14 };
                 const mPct = Math.round(metricScore(pillarKey, mk, metrics?.[mk]) * 100);
-                const wtLabel = mc.weight != null ? `Ã${mc.weight}` : "";
+                const wtLabel = mc.weight != null ? `×${mc.weight}` : "";
                 const header = (
                   <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:8 }}>
                     <div style={{ display:"flex", alignItems:"center", gap:6 }}>
@@ -738,7 +738,7 @@
       );
     }
 
-    // âââ Pillar Card ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+    // ─── Pillar Card ──────────────────────────────────────────────────────────
     function PillarCard({ pillarKey, score, trendValues, onTrack }) {
       const cfg = PILLARS[pillarKey];
       const pct = Math.round(score * 100);
@@ -759,13 +759,13 @@
           <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginTop:8 }}>
             <span style={{ color:"#6b7280", fontSize:11 }}>7-day</span>
             <button onClick={onTrack} style={{ background:cfg.color+"22", color:cfg.color,
-              border:`1px solid ${cfg.color}44`, borderRadius:8, padding:"3px 10px", fontSize:11, cursor:"pointer" }}>Log â</button>
+              border:`1px solid ${cfg.color}44`, borderRadius:8, padding:"3px 10px", fontSize:11, cursor:"pointer" }}>Log →</button>
           </div>
         </div>
       );
     }
 
-    // âââ App ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+    // ─── App ──────────────────────────────────────────────────────────────────
     function FourPillarsApp() {
       const [data, setData]   = useState(() => loadData());
       const [date, setDate]   = useState(todayStr());
@@ -819,16 +819,16 @@
               <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between",
                             background:"#0f172a", borderRadius:12, padding:"8px 14px" }}>
                 <button onClick={() => setDate(d=>offsetDate(d,-1))}
-                  style={{ background:"none", border:"none", color:"#9ca3af", fontSize:20, cursor:"pointer", padding:"0 4px", lineHeight:1 }}>â¹</button>
+                  style={{ background:"none", border:"none", color:"#9ca3af", fontSize:20, cursor:"pointer", padding:"0 4px", lineHeight:1 }}>‹</button>
                 <div style={{ textAlign:"center" }}>
                   <div style={{ color:"#fff", fontWeight:600, fontSize:13 }}>{fmtDate(date)}</div>
                   <div style={{ fontSize:10, marginTop:1, color: isToday?"#22c55e":"#6b7280" }}>
-                    {isToday ? "â Today" : "Past entry"}
+                    {isToday ? "● Today" : "Past entry"}
                   </div>
                 </div>
                 <button onClick={() => setDate(d=>offsetDate(d,1))} disabled={isToday}
                   style={{ background:"none", border:"none", fontSize:20, padding:"0 4px", lineHeight:1,
-                           color: isToday?"#1f2937":"#9ca3af", cursor: isToday?"default":"pointer" }}>âº</button>
+                           color: isToday?"#1f2937":"#9ca3af", cursor: isToday?"default":"pointer" }}>›</button>
               </div>
             </div>
           </div>
@@ -849,7 +849,7 @@
                   <div style={{ color:scoreColor(totalPct), fontWeight:700, fontSize:26, lineHeight:1,
                                 textShadow: totalPct>=100 ? "0 0 10px #22c55e":"none" }}>{totalPct}%</div>
                   <div style={{ color:"#6b7280", fontSize:12, marginTop:4 }}>
-                    {totalPct>=80?"ð¥ Locked in":totalPct>=55?"ðª Keep pushing":totalPct>0?"ð Room to grow":"â Log today"}
+                    {totalPct>=80?"🔥 Locked in":totalPct>=55?"💪 Keep pushing":totalPct>0?"📈 Room to grow":"— Log today"}
                   </div>
                 </div>
                 <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:6 }}>
@@ -892,7 +892,7 @@
                                       display:"flex", alignItems:"center", justifyContent:"center",
                                       background:col+"22", border:`2px solid ${sel?col:"transparent"}`,
                                       color:col, fontSize:10, fontWeight:700 }}>
-                          {sc>0 ? sc : "â"}
+                          {sc>0 ? sc : "—"}
                         </div>
                       </button>
                     );
@@ -915,7 +915,7 @@
                   border:`1px solid ${saved?"#22c55e":"#374151"}`,
                   color: saved?"#22c55e":"#9ca3af",
                   borderRadius:10, padding:"6px 16px", fontSize:13, fontWeight:600, cursor:"pointer", transition:"all 0.2s",
-                }}>{saved?"â Saved":"Save"}</button>
+                }}>{saved?"✓ Saved":"Save"}</button>
               </div>
 
               <div style={{ background:"#0f172a", border:"1px solid #1e2937",
@@ -957,10 +957,10 @@
                 <div style={{ display:"flex", gap:8 }}>
                   <button onClick={() => setData(prev => ({ ...prev, [date]:perfectDayMetrics() }))}
                     style={{ flex:1, background:"#1e293b", border:"1px solid #374151",
-                             color:"#9ca3af", borderRadius:8, padding:"7px 0", fontSize:12, cursor:"pointer" }}>â Perfect Day</button>
+                             color:"#9ca3af", borderRadius:8, padding:"7px 0", fontSize:12, cursor:"pointer" }}>✅ Perfect Day</button>
                   <button onClick={() => setData(prev => ({ ...prev, [date]:emptyDayMetrics() }))}
                     style={{ flex:1, background:"#1e293b", border:"1px solid #374151",
-                             color:"#9ca3af", borderRadius:8, padding:"7px 0", fontSize:12, cursor:"pointer" }}>ð Clear Day</button>
+                             color:"#9ca3af", borderRadius:8, padding:"7px 0", fontSize:12, cursor:"pointer" }}>🗑 Clear Day</button>
                 </div>
               </div>
             </div>
