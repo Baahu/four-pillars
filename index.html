@@ -481,9 +481,9 @@
                           flexShrink:0, transition:"all 0.15s" }}>
               {done && <span style={{ color, fontSize:12, lineHeight:1 }}>✓</span>}
             </div>
-            <span style={{ color: done ? "var(--text)" : "var(--text-muted)", fontSize:14, transition:"color 0.15s" }}>{meta.label}</span>
-          </div>
-          <Toggle value={done} onChange={onChange} color={color} />
+            <span style={{ color: done ? "var(-text)" : "var(-text-muted)", fontSize:14, transition:"color 0.15s" }}>{meta.label}</span>
+          
+<Toggle value={done} onChange={onChange} color={color} />
         </div>
       );
     }
@@ -497,22 +497,22 @@
       return (
         <div>
           <div style={{ display:"flex", justifyContent:"space-between", marginBottom:6 }}>
-            <span style={{ color:"var(--text-dim)", fontSize:12 }}>{cfg.description}</span>
-            <span style={{ fontWeight:700, fontSize:13, color: pct>=100 ? color : "var(--text-muted)" }}>
-              {earned}{u}<span style={{ color:"var(--text-faint)", fontWeight:400 }}> / {cfg.cap}{u}</span>
+            <span style={{ color:"var(-text-dim)", fontSize:12 }}>{cfg.description}</span>
+            <span style={{ fontWeight:700, fontSize:13, color: pct>==100 ? color : "var(-text-muted)" }}>
+               {earned}{u}<span style={{ color:"var(--text-faint)", fontWeight:400 }}> / {cfg.cap}{u}</span>
             </span>
           </div>
           <div style={{ height:5, background:"var(--border)", borderRadius:3, overflow:"hidden", marginBottom:10 }}>
             <div style={{ height:"100%", width:`${pct}%`, background: pct>=100 ? color : color+"bb",
-                          borderRadius:3, transition:"width 0.35s" }} />
+                          borderRadius::3, transition:""width 0.35s" }} />
           </div>
           {Object.entries(cfg.items).map(([k,item]) => {
             const checked = value?.[k] ?? false;
             return (
               <div key={k} onClick={() => onChange({ ...(value||{}), [k]: !checked })}
                 style={{ display:"flex", alignItems:"center", justifyContent:"space-between",
-                         padding:"9px 0", borderBottom:"1px solid var(--divider-faint)",
-                         cursor:"pointer", userSelect:"none" }}>
+                         padding:"9px 0", borderBottom:"1px solid var(-divider-faint)",
+                        cursor:"pointer", userSelect:"none" }}>
                 <div style={{ display:"flex", alignItems:"center", gap:10 }}>
                   <div style={{ width:18, height:18, borderRadius:5, border:`2px solid ${checked ? color : "var(--border-muted)"}`,
                                 background: checked ? color+"33" : "transparent",
@@ -771,7 +771,7 @@
                 );
                 if (mc.type==="bool") return (
                   <div key={mk} style={wrap}>
-                    <BoolRow pillarKey={pillarKey} meta={mc} value={metrics?.[mk]??false} onChange={val=>onChange(pillarKey,mk,val)} />
+                    <BoolRow pillarKey={pillarKey} meta={mc} value={metrics?.[[k]??false} onChange={val=>onChange(pillarKey,mk,val)} />
                   </div>
                 );
                 if (mc.type==="weighted_checklist") return (
@@ -921,20 +921,13 @@
                   </div>
                 </div>
 
-                {/* Date nav */}
-                <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between",
+                {/* Today's date */}
+                <div style={{ display:"flex", alignItems:"center", justifyContent:"center",
                               background:"var(--bg-item)", borderRadius:12, padding:"8px 14px", marginBottom:10 }}>
-                  <button onClick={() => setDate(d=>offsetDate(d,-1))}
-                    style={{ background:"none", border:"none", color:"var(--text-muted)", fontSize:20, cursor:"pointer", padding:"0 4px", lineHeight:1 }}>‹</button>
                   <div style={{ textAlign:"center" }}>
-                    <div style={{ color:"var(--text)", fontWeight:600, fontSize:13 }}>{fmtDate(date)}</div>
-                    <div style={{ fontSize:10, marginTop:1, color: isToday?"#22c55e":"var(--text-dim)" }}>
-                      {isToday ? "● Today" : "Past entry"}
-                    </div>
+                    <div style={{ color:"var(--text)", fontWeight:600, fontSize:13 }}>{fmtDate(todayStr())}</div>
+                    <div style={{ fontSize:10, marginTop:1, color:"#22c55e" }}>● Today</div>
                   </div>
-                  <button onClick={() => setDate(d=>offsetDate(d,1))} disabled={isToday}
-                    style={{ background:"none", border:"none", fontSize:20, padding:"0 4px", lineHeight:1,
-                             color: isToday?"var(--border)":"var(--text-muted)", cursor: isToday?"default":"pointer" }}>›</button>
                 </div>
 
                 {/* 5-tab nav */}
@@ -1000,26 +993,30 @@
 
                 <div style={{ background:"var(--bg-card)", border:"1px solid var(--border)", borderRadius:16, padding:16 }}>
                   <div style={{ color:"var(--text-dim)", fontSize:11, fontWeight:600,
-                                textTransform:"uppercase", letterSpacing:0.5, marginBottom:12 }}>7-Day</div>
-                  <div style={{ display:"grid", gridTemplateColumns:"repeat(7,1fr)", gap:4 }}>
-                    {days7.map(d => {
+                                textTransform:"uppercase", letterSpacing:0.5, marginBottom:12 }}>7-Day Meta Score</div>
+                  <div style={{ display:"flex", gap:3, alignItems:"flex-end" }}>
+                    {last7(todayStr()).map((d, i) => {
                       const sc  = Math.round(overallScore(data[d])*100);
                       const col = scoreColor(sc);
                       const dn  = new Date(d+"T00:00:00").toLocaleDateString("en-US",{weekday:"narrow"});
-                      const sel = d===date;
+                      const isT = i === 6;
+                      const barH = sc > 0 ? Math.max(Math.round(sc * 0.55), 5) : 3;
                       return (
-                        <button key={d} onClick={() => setDate(d)}
-                          style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:4,
-                                   padding:"6px 2px", borderRadius:10, border:"none",
-                                   background: sel?"var(--bg-row)":"transparent", cursor:"pointer" }}>
-                          <span style={{ color:"var(--text-dim)", fontSize:10 }}>{dn}</span>
-                          <div style={{ width:32, height:32, borderRadius:"50%",
-                                        display:"flex", alignItems:"center", justifyContent:"center",
-                                        background:col+"22", border:`2px solid ${sel?col:"transparent"}`,
-                                        color:col, fontSize:10, fontWeight:700 }}>
-                            {sc>0 ? sc : "—"}
-                          </div>
-                        </button>
+                        <div key={d} style={{ flex:1, display:"flex", flexDirection:"column", alignItems:"center", gap:2 }}>
+                          <span style={{ fontSize:9, fontWeight:700, lineHeight:1, minHeight:11,
+                                         color: col, display:"flex", alignItems:"flex-end" }}>
+                            {sc > 0 ? sc : ""}
+                          </span>
+                          <div style={{ width:"100%", height:barH, borderRadius:"2px 2px 0 0",
+                                        background: sc > 0 ? col + (isT ? "ff" : "77") : "var(--border)",
+                                        boxShadow: isT && sc > 0 ? `0 0 8px ${col}66` : "none",
+                                        transition:"height 0.4s ease" }} />
+                          <span style={{ fontSize:9, lineHeight:1, marginTop:2,
+                                         color: isT ? "#22c55e" : "var(--text-dim)",
+                                         fontWeight: isT ? 700 : 400 }}>
+                            {dn}
+                          </span>
+                        </div>
                       );
                     })}
                   </div>
@@ -1118,6 +1115,6 @@
         navigator.serviceWorker.register('./sw.js').catch(() => {});
       });
     }
-  </script>
+  
 </body>
 </html>
