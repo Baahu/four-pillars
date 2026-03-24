@@ -771,7 +771,7 @@
                 );
                 if (mc.type==="bool") return (
                   <div key={mk} style={wrap}>
-                    <BoolRow pillarKey={pillarKey} meta={mc} value={metrics?.[[k]??false} onChange={val=>onChange(pillarKey,mk,val)} />
+                    <BoolRow pillarKey={pillarKey} meta={mc} value={metrics?.[mk]??false} onChange={val=>onChange(pillarKey,mk,val)} />
                   </div>
                 );
                 if (mc.type==="weighted_checklist") return (
