@@ -488,7 +488,7 @@
       );
     }
 
-    // ─── Weighted Checklist ──────────────────────────────────────────────────────
+    // ─── Weighted Checklist ───────────────────────────────────────────────────
     function WeightedChecklist({ pillarKey, cfg, value, onChange }) {
       const { color } = PILLARS[pillarKey];
       const earned = value ? Object.entries(cfg.items).reduce((s,[k,item]) => s+(value[k]?item.points:0), 0) : 0;
@@ -515,8 +515,8 @@
                          cursor:"pointer", userSelect:"none" }}>
                 <div style={{ display:"flex", alignItems:"center", gap:10 }}>
                   <div style={{ width:18, height:18, borderRadius:5, border:`2px solid ${checked ? color : "var(--border-muted)"}`,
-                                  background: checked ? color+"33" : "transparent",
-                                 display:"flex", alignItems:"center", justifyContent:"center",
+                                background: checked ? color+"33" : "transparent",
+                                display:"flex", alignItems:"center", justifyContent:"center",
                                 flexShrink:0, transition:"all 0.15s" }}>
                     {checked && <span style={{ color, fontSize:11, lineHeight:1 }}>✓</span>}
                   </div>
@@ -892,8 +892,8 @@
       return (
         <DarkCtx.Provider value={darkMode}>
           <div className={darkMode ? "" : "light-mode"}
-              style={{ minHeight:"100vh", background:"var(--bg)", color:"var(--text)",
-                       fontFamily:"system-ui,-apple-system,sans-serif", paddingBottom:64 }}>
+               style={{ minHeight:"100vh", background:"var(--bg)", color:"var(--text)",
+                        fontFamily:"system-ui,-apple-system,sans-serif", paddingBottom:64 }}>
 
             {/* Header */}
             <div style={{ position:"sticky", top:0, zIndex:20, background:"var(--header-bg)",
@@ -913,10 +913,10 @@
                       style={{ background:"var(--bg-item)", border:"1px solid var(--border)",
                                borderRadius:20, padding:"5px 10px", cursor:"pointer",
                                fontSize:16, lineHeight:1, display:"flex", alignItems:"center", gap:5 }}>
-                        <span>{darkMode ? "☀️" : "🌙"}</span>
-                        <span style={{ fontSize:10, color:"var(--text-muted)", fontWeight:500 }}>
-                          {darkMode ? "Light" : "Dark"}
-                        </span>
+                      <span>{darkMode ? "☀️" : "🌙"}</span>
+                      <span style={{ fontSize:10, color:"var(--text-muted)", fontWeight:500 }}>
+                        {darkMode ? "Light" : "Dark"}
+                      </span>
                     </button>
                   </div>
                 </div>
@@ -1065,12 +1065,12 @@
                         <button key={pk} onClick={() => setTab(pk)}
                           style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:4,
                                    background:"transparent", border:"none", cursor:"pointer",
-                                    opacity: tab===pk ? 1 : 0.6, transition:"opacity 0.2s" }}>
-                            <Ring pct={sc/100} color={scoreColor(sc)} size={40} stroke={4} glow={sc>=100}>
+                                   opacity: tab===pk ? 1 : 0.6, transition:"opacity 0.2s" }}>
+                          <Ring pct={sc/100} color={scoreColor(sc)} size={40} stroke={4} glow={sc>=100}>
                             <span style={{ fontSize:13 }}>{pc.emoji}</span>
-                            </Ring>
-                            <span style={{ fontSize:10, color:scoreColor(sc) }}>{sc}%</span>
-                          </button>
+                          </Ring>
+                          <span style={{ fontSize:10, color:scoreColor(sc) }}>{sc}%</span>
+                        </button>
                       );
                     })}
                   </div>
@@ -1096,7 +1096,7 @@
                                color:"var(--text-muted)", borderRadius:8, padding:"7px 0", fontSize:12, cursor:"pointer" }}>🗑 Clear Day</button>
                   </div>
                 </div>
-              </diw>
+              </div>
             )}
           </div>
         </DarkCtx.Provider>
@@ -1115,6 +1115,6 @@
         navigator.serviceWorker.register('./sw.js').catch(() => {});
       });
     }
-  
+  </script>
 </body>
 </html>
