@@ -7,10 +7,10 @@
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="apple-mobile-web-app-title" content="4 Pillars" />
-  <title>4 Pillars Command Center</title>
+  <meta name="apple-mobile-web-app-title" content="Akash Core" />
+  <title>Akash Core</title>
   <link rel="manifest" href="manifest.json" />
-  <link rel="apple-touch-icon" href="icon.svg" />
+  <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Cdefs%3E%3ClinearGradient id='bg' x1='0' y1='0' x2='192' y2='192' gradientUnits='userSpaceOnUse'%3E%3Cstop offset='0%25' stop-color='%231e1b4b'/%3E%3Cstop offset='100%25' stop-color='%230f172a'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='192' height='192' rx='42' fill='url(%23bg)'/%3E%3Crect x='22' y='108' width='28' height='60' rx='6' fill='%23ef4444'/%3E%3Crect x='62' y='76' width='28' height='92' rx='6' fill='%23a78bfa'/%3E%3Crect x='102' y='92' width='28' height='76' rx='6' fill='%233b82f6'/%3E%3Crect x='142' y='52' width='28' height='116' rx='6' fill='%2322c55e'/%3E%3Ctext x='96' y='60' font-family='Arial Black,Arial' font-weight='900' font-size='38' fill='white' text-anchor='middle' letter-spacing='1'%3EAKASH%3C/text%3E%3Ctext x='96' y='90' font-family='Arial Black,Arial' font-weight='900' font-size='24' fill='%23a78bfa' text-anchor='middle' letter-spacing='5'%3ECORE%3C/text%3E%3C/svg%3E" />
   <style>
     *, *::before, *::after { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
     html, body { margin: 0; padding: 0; overscroll-behavior: none; }
@@ -74,7 +74,7 @@
   <div id="root">
     <div id="loading">
       <div class="emoji">⚔️</div>
-      <div class="text">Loading 4 Pillars…</div>
+      <div class="text">Loading Akash Core…</div>
     </div>
   </div>
 
@@ -850,8 +850,20 @@
       const [tab, setTab]     = useState("dashboard");
       const [darkMode, setDarkMode] = useState(true);
       const [saved, setSaved] = useState(false);
+      const [installPrompt, setInstallPrompt] = useState(null);
+      const [showInstall, setShowInstall] = useState(false);
 
       useEffect(() => { saveData(data); }, [data]);
+
+      useEffect(() => {
+        const handler = e => { e.preventDefault(); setInstallPrompt(e); setShowInstall(true); };
+        window.addEventListener('beforeinstallprompt', handler);
+        // iOS detection: show hint if standalone not active
+        const isIos = /iphone|ipad|ipod/i.test(navigator.userAgent);
+        const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+        if (isIos && !isStandalone) setShowInstall(true);
+        return () => window.removeEventListener('beforeinstallprompt', handler);
+      }, []);
 
       // activePillar derived from tab
       const activePillar = tab !== "dashboard" ? tab : null;
@@ -903,11 +915,45 @@
 
                 {/* Title + theme toggle */}
                 <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:10 }}>
-                  <div>
-                    <div style={{ color:"var(--text)", fontWeight:700, fontSize:17, letterSpacing:-0.3 }}>4 Pillars</div>
-                    <div style={{ color:"var(--text-faint)", fontSize:11 }}>Command Center</div>
+                  <div style={{ display:"flex", alignItems:"center", gap:9 }}>
+                    {/* App icon */}
+                    <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ borderRadius:9, flexShrink:0 }}>
+                      <defs>
+                        <linearGradient id="bg" x1="0" y1="0" x2="36" y2="36" gradientUnits="userSpaceOnUse">
+                          <stop offset="0%" stopColor="#1e1b4b"/>
+                          <stop offset="100%" stopColor="#0f172a"/>
+                        </linearGradient>
+                      </defs>
+                      <rect width="36" height="36" rx="9" fill="url(#bg)"/>
+                      <rect x="5" y="22" width="5" height="9" rx="1.5" fill="#ef4444"/>
+                      <rect x="12" y="16" width="5" height="15" rx="1.5" fill="#a78bfa"/>
+                      <rect x="19" y="19" width="5" height="12" rx="1.5" fill="#3b82f6"/>
+                      <rect x="26" y="12" width="5" height="19" rx="1.5" fill="#22c55e"/>
+                      <text x="18" y="11" fontFamily="Arial" fontWeight="800" fontSize="7" fill="white" textAnchor="middle" letterSpacing="0.5">AKASH</text>
+                    </svg>
+                    <div>
+                      <div style={{ color:"var(--text)", fontWeight:700, fontSize:17, letterSpacing:-0.3 }}>Akash Core</div>
+                      <div style={{ color:"var(--text-faint)", fontSize:10 }}>Command Center</div>
+                    </div>
                   </div>
-                  <div style={{ display:"flex", alignItems:"center", gap:8 }}>
+                  <div style={{ display:"flex", alignItems:"center", gap:6 }}>
+                    {/* Install button */}
+                    {showInstall && (
+                      <button onClick={async () => {
+                        if (installPrompt) {
+                          installPrompt.prompt();
+                          const { outcome } = await installPrompt.userChoice;
+                          if (outcome === 'accepted') setShowInstall(false);
+                        } else {
+                          alert('To install: tap the Share button (iOS) or menu (Android) → "Add to Home Screen"');
+                        }
+                      }}
+                        style={{ background:"linear-gradient(135deg,#4f46e5,#7c3aed)", border:"none",
+                                 borderRadius:20, padding:"5px 10px", cursor:"pointer",
+                                 fontSize:11, color:"white", fontWeight:600, display:"flex", alignItems:"center", gap:4 }}>
+                        <span>⬇</span><span>Install</span>
+                      </button>
+                    )}
                     {/* Dark/Light toggle */}
                     <button onClick={() => setDarkMode(d=>!d)}
                       style={{ background:"var(--bg-item)", border:"1px solid var(--border)",
