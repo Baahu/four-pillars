@@ -2,530 +2,736 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no" />
-  <meta name="theme-color" content="#030712" />
-  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#0a0a0f" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="apple-mobile-web-app-title" content="Akash Core" />
+  <meta name="mobile-web-app-capable" content="yes" />
   <title>Akash Core</title>
   <link rel="manifest" href="manifest.json" />
-  <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Cdefs%3E%3ClinearGradient id='bg' x1='0' y1='0' x2='192' y2='192' gradientUnits='userSpaceOnUse'%3E%3Cstop offset='0%25' stop-color='%231e1b4b'/%3E%3Cstop offset='100%25' stop-color='%230f172a'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='192' height='192' rx='42' fill='url(%23bg)'/%3E%3Crect x='22' y='108' width='28' height='60' rx='6' fill='%23ef4444'/%3E%3Crect x='62' y='76' width='28' height='92' rx='6' fill='%23a78bfa'/%3E%3Crect x='102' y='92' width='28' height='76' rx='6' fill='%233b82f6'/%3E%3Crect x='142' y='52' width='28' height='116' rx='6' fill='%2322c55e'/%3E%3Ctext x='96' y='60' font-family='Arial Black,Arial' font-weight='900' font-size='38' fill='white' text-anchor='middle' letter-spacing='1'%3EAKASH%3C/text%3E%3Ctext x='96' y='90' font-family='Arial Black,Arial' font-weight='900' font-size='24' fill='%23a78bfa' text-anchor='middle' letter-spacing='5'%3ECORE%3C/text%3E%3C/svg%3E" />
   <style>
-    *, *::before, *::after { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-    html, body { margin: 0; padding: 0; overscroll-behavior: none; }
-    body { -webkit-font-smoothing: antialiased; }
-    input[type=number]::-webkit-inner-spin-button,
-    input[type=number]::-webkit-outer-spin-button { opacity: 1; height: 28px; }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    /* ── Dark (default) theme ── */
     :root {
-      --bg: #030712;
-      --bg-card: #0a0f1e;
-      --bg-item: #0f172a;
-      --bg-input: #111827;
-      --bg-row: #1e293b;
-      --border: #1f2937;
-      --border-muted: #374151;
-      --text: #ffffff;
-      --text-secondary: #e5e7eb;
-      --text-muted: #9ca3af;
-      --text-dim: #6b7280;
-      --text-faint: #4b5563;
-      --header-bg: rgba(3,7,18,0.97);
-      --ring-track: #1f2937;
-      --toggle-off: #374151;
-      --divider: rgba(255,255,255,0.06);
-      --divider-light: rgba(255,255,255,0.05);
-      --divider-faint: rgba(255,255,255,0.04);
+      --bg: #0a0a0f;
+      --surface: #111118;
+      --surface2: #16161f;
+      --border: #1e1e2e;
+      --text: #e2e8f0;
+      --text-muted: #64748b;
+      --text-dim: #94a3b8;
+      --radius: 14px;
+      --radius-sm: 8px;
+      --nav-h: 64px;
     }
-    /* ── Light theme ── */
-    .light-mode {
-      --bg: #f8fafc;
-      --bg-card: #ffffff;
-      --bg-item: #f1f5f9;
-      --bg-input: #f8fafc;
-      --bg-row: #e2e8f0;
-      --border: #e2e8f0;
-      --border-muted: #cbd5e1;
-      --text: #0f172a;
-      --text-secondary: #1e293b;
-      --text-muted: #475569;
-      --text-dim: #64748b;
-      --text-faint: #94a3b8;
-      --header-bg: rgba(248,250,252,0.97);
-      --ring-track: #e2e8f0;
-      --toggle-off: #cbd5e1;
-      --divider: rgba(0,0,0,0.06);
-      --divider-light: rgba(0,0,0,0.05);
-      --divider-faint: rgba(0,0,0,0.04);
+
+    html {
+      -webkit-tap-highlight-color: transparent;
+      -webkit-text-size-adjust: 100%;
+      text-size-adjust: 100%;
     }
-    #loading {
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      height: 100vh; color: #9ca3af; font-family: system-ui, -apple-system, sans-serif;
-      gap: 16px; background: #030712;
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
+      overscroll-behavior: none;
+      touch-action: pan-y;
+      -webkit-font-smoothing: antialiased;
+      user-select: none;
+      -webkit-user-select: none;
     }
-    #loading .emoji { font-size: 48px; animation: pulse 1.4s ease-in-out infinite; }
-    #loading .text { font-size: 14px; letter-spacing: 0.5px; }
-    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+    #root {
+      height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      padding-bottom: env(safe-area-inset-bottom, 0px);
+    }
+
+    .scroll-area {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior-y: contain;
+    }
+
+    .page {
+      min-height: 100%;
+      padding: 0 0 24px;
+    }
+
+    /* Header */
+    .header {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 16px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: max(14px, env(safe-area-inset-top, 14px));
+    }
+
+    .header-title { font-size: 18px; font-weight: 700; letter-spacing: -0.3px; }
+    .header-sub { font-size: 13px; color: var(--text-muted); margin-top: 1px; }
+
+    /* Bottom Nav */
+    .bottom-nav {
+      display: flex;
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      height: var(--nav-h);
+      flex-shrink: 0;
+    }
+
+    .nav-btn {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      padding: 8px 4px;
+      -webkit-tap-highlight-color: transparent;
+      transition: opacity 0.15s;
+      min-height: 44px;
+    }
+
+    .nav-btn:active { opacity: 0.6; }
+    .nav-icon { font-size: 20px; line-height: 1; transition: transform 0.2s; }
+    .nav-btn.active .nav-icon { transform: scale(1.15); }
+    .nav-label { font-size: 10px; font-weight: 600; color: var(--text-muted); letter-spacing: 0.3px; }
+    .nav-btn.active .nav-label { color: var(--text); }
+
+    /* Dashboard pillar grid */
+    .pillar-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      padding: 14px 16px;
+    }
+
+    .pillar-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      transition: transform 0.15s, opacity 0.15s;
+      text-align: left;
+      min-height: 100px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .pillar-card:active { transform: scale(0.97); opacity: 0.85; }
+    .card-emoji { font-size: 22px; line-height: 1; }
+    .card-label { font-size: 11px; color: var(--text-muted); font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; }
+    .card-score { font-size: 28px; font-weight: 800; letter-spacing: -1px; margin-top: auto; }
+    .card-bar { height: 3px; border-radius: 2px; background: var(--border); margin-top: 2px; }
+    .card-bar-fill { height: 100%; border-radius: 2px; transition: width 0.4s ease; }
+
+    /* Trend chart */
+    .trend-section { padding: 0 16px 12px; }
+    .section-title {
+      font-size: 11px; font-weight: 700; color: var(--text-muted);
+      letter-spacing: 0.8px; text-transform: uppercase; margin-bottom: 10px;
+    }
+
+    .trend-chart {
+      display: flex;
+      align-items: flex-end;
+      gap: 6px;
+      height: 80px;
+      padding: 0 2px;
+    }
+
+    .trend-col {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 4px;
+      height: 100%;
+    }
+
+    .trend-bar-wrap { flex: 1; width: 100%; display: flex; align-items: flex-end; }
+
+    .trend-bar {
+      width: 100%;
+      min-height: 2px;
+      border-radius: 3px 3px 0 0;
+      transition: height 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .trend-day { font-size: 10px; font-weight: 600; color: var(--text-muted); line-height: 1; }
+    .trend-day.today { color: var(--text); }
+
+    /* Overall score section */
+    .overall-section {
+      padding: 16px 16px 8px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .score-ring { position: relative; flex-shrink: 0; }
+    .score-ring svg { transform: rotate(-90deg); display: block; }
+
+    .score-ring-text {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .score-big { font-size: 20px; font-weight: 800; letter-spacing: -1px; line-height: 1; }
+    .score-pct { font-size: 10px; color: var(--text-muted); font-weight: 600; }
+    .overall-info { flex: 1; }
+    .overall-label { font-size: 16px; font-weight: 700; letter-spacing: -0.3px; }
+    .overall-sub { font-size: 13px; color: var(--text-muted); margin-top: 2px; }
+
+    /* Date row */
+    .date-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 16px 12px;
+    }
+
+    .date-btn {
+      width: 36px; height: 36px;
+      display: flex; align-items: center; justify-content: center;
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      background: var(--surface);
+      color: var(--text);
+      font-size: 18px;
+      cursor: pointer;
+      flex-shrink: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .date-btn:active { opacity: 0.6; }
+
+    .date-display {
+      flex: 1;
+      font-size: 14px;
+      font-weight: 600;
+      text-align: center;
+      color: var(--text-dim);
+    }
+
+    /* Pillar detail */
+    .pillar-header {
+      padding: 12px 16px 14px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 14px;
+      color: var(--text-muted);
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 4px 0;
+      margin-bottom: 8px;
+      -webkit-tap-highlight-color: transparent;
+      min-height: 36px;
+    }
+
+    .pillar-header-main { display: flex; align-items: center; gap: 10px; }
+    .pillar-header-emoji { font-size: 28px; }
+    .pillar-header-score { margin-left: auto; font-size: 32px; font-weight: 800; letter-spacing: -1.5px; }
+
+    /* Metric cards */
+    .metrics-list { display: flex; flex-direction: column; gap: 12px; padding: 16px; }
+
+    .metric-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px;
+      transition: border-color 0.2s;
+    }
+
+    .metric-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    .metric-name { font-size: 14px; font-weight: 700; }
+
+    .metric-score-badge {
+      font-size: 13px; font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 20px;
+      background: var(--surface2);
+    }
+
+    .metric-desc { font-size: 12px; color: var(--text-muted); margin-bottom: 12px; }
+
+    /* Checklist */
+    .checklist-items { display: flex; flex-direction: column; gap: 8px; }
+
+    .check-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      background: var(--surface2);
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      cursor: pointer;
+      min-height: 44px;
+      transition: background 0.15s, border-color 0.15s;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .check-item.checked { border-color: currentColor; background: color-mix(in srgb, currentColor 12%, var(--surface2)); }
+    .check-item:active { opacity: 0.7; }
+
+    .check-box {
+      width: 22px; height: 22px;
+      border-radius: 6px;
+      border: 2px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      transition: all 0.15s;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .check-item.checked .check-box { background: currentColor; border-color: currentColor; color: #000; }
+    .check-label { font-size: 14px; flex: 1; }
+    .check-pts { font-size: 12px; color: var(--text-muted); white-space: nowrap; }
+
+    .checklist-progress { margin-top: 10px; display: flex; align-items: center; gap: 8px; }
+    .progress-bar { flex: 1; height: 4px; background: var(--border); border-radius: 2px; }
+    .progress-fill { height: 100%; border-radius: 2px; transition: width 0.3s ease; }
+    .progress-label { font-size: 12px; color: var(--text-muted); font-weight: 600; white-space: nowrap; }
+
+    /* Tiered number */
+    .tier-number-wrap { display: flex; flex-direction: column; gap: 10px; }
+
+    .tier-number-input { display: flex; align-items: center; gap: 10px; }
+
+    .num-input {
+      width: 80px;
+      padding: 10px 12px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text);
+      font-size: 18px;
+      font-weight: 700;
+      text-align: center;
+      -webkit-appearance: none;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+
+    .num-input:focus { border-color: var(--text-muted); }
+    .num-unit { font-size: 14px; color: var(--text-muted); }
+
+    .tier-pills { display: flex; flex-wrap: wrap; gap: 6px; }
+
+    .tier-pill {
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      cursor: pointer;
+      transition: all 0.15s;
+      min-height: 36px;
+      display: flex;
+      align-items: center;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .tier-pill.active { border-color: currentColor; background: color-mix(in srgb, currentColor 20%, var(--surface2)); }
+    .tier-pill:active { opacity: 0.7; }
+
+    /* Tiered selector groups */
+    .tier-selector-groups { display: flex; flex-direction: column; gap: 14px; }
+    .tier-group-label { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+    .tier-group-pills { display: flex; flex-wrap: wrap; gap: 6px; }
+
+    /* Save bar */
+    .save-row {
+      padding: 12px 16px;
+      background: var(--bg);
+      border-top: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    .save-btn {
+      width: 100%;
+      padding: 15px;
+      border-radius: var(--radius);
+      border: none;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      min-height: 52px;
+      transition: transform 0.1s, background 0.3s;
+      letter-spacing: 0.2px;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .save-btn:active { transform: scale(0.98); }
+
+    /* Divider */
+    .divider { height: 1px; background: var(--border); margin: 4px 16px 0; }
   </style>
 </head>
 <body>
-  <div id="root">
-    <div id="loading">
-      <div class="emoji">⚔️</div>
-      <div class="text">Loading Akash Core…</div>
-    </div>
-  </div>
+  <div id="root"></div>
 
-  <!-- React 18 + Babel standalone (CDN) -->
-  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
-  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
 
   <script type="text/babel">
-    const { useState, useEffect, useMemo, useRef, createContext, useContext } = React;
+    const { useState, useCallback } = React;
 
-    const DarkCtx = createContext(true);
+    // ── Storage ────────────────────────────────────────────────────────────────────────────────────
+    const STORAGE_KEY = "four_pillars_v4";
 
-    // ─── Pillar Config ────────────────────────────────────────────────────────
+    function loadData() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) return JSON.parse(raw);
+      } catch (_) {}
+      return {};
+    }
+
+    function saveData(d) {
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(d)); } catch (_) {}
+    }
+
+    // ── Date Helpers ───────────────────────────────────────────────────────────────────────────────
+    function todayStr() {
+      return new Date().toISOString().slice(0, 10);
+    }
+
+    function last7Days() {
+      const days = [];
+      for (let i = 6; i >= 0; i--) {
+        const d = new Date();
+        d.setDate(d.getDate() - i);
+        days.push(d.toISOString().slice(0, 10));
+      }
+      return days;
+    }
+
+    function fmtDate(dateStr) {
+      const d = new Date(dateStr + 'T00:00:00');
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const diff = Math.round((d - today) / 86400000);
+      if (diff === 0) return 'Today';
+      if (diff === -1) return 'Yesterday';
+      return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    }
+
+    function dayLetter(dateStr) {
+      return new Date(dateStr + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'narrow' });
+    }
+
+    // ── Pillars Config ─────────────────────────────────────────────────────────────────────────────
     const PILLARS = {
-
       warrior: {
         label: "Warrior", emoji: "⚔️", color: "#ef4444",
         tagline: "Forge your body, own your day",
-        bg: "#1c0a0a", border: "#3f1515",
-        bgLight: "#fff5f5", borderLight: "#fecaca",
         metrics: {
           exercise: {
-            label: "Exercise", weight: 50,
-            type: "weighted_checklist", description: "1hr+", cap: 100, displayUnit: "pts",
+            label: "Exercise", weight: 50, type: "weighted_checklist",
+            description: "1hr+ training",
+            cap: 100, displayUnit: "pts",
             items: {
-              morning_stretch:   { label: "Morning Stretch",   points: 15 },
-              strength_training: { label: "Strength Training", points: 70 },
-              cardio:            { label: "Cardio",            points: 70 },
-              sports:            { label: "Sports",            points: 70 },
-              ankle_stretch:     { label: "Ankle Stretch",     points: 15 },
-            },
+              morning_stretch:  { label: "Morning Stretch",    points: 15 },
+              strength_training:{ label: "Strength Training",  points: 70 },
+              cardio:           { label: "Cardio",             points: 70 },
+              sports:           { label: "Sports",             points: 70 },
+              ankle_stretch:    { label: "Ankle Stretch",      points: 15 }
+            }
           },
           sleep: {
-            label: "Sleep", weight: 30,
-            type: "tiered_number", description: "7+ hours", unit: "hrs",
+            label: "Sleep", weight: 30, type: "tiered_number",
+            description: "7+ hours target", unit: "hrs",
             tiers: [
-              { label: "<4h",  upTo: 4,        score: 0   },
-              { label: "4–6h", upTo: 6,        score: 50  },
-              { label: "6–7h", upTo: 7,        score: 80  },
-              { label: "7–8h", upTo: 8,        score: 90  },
-              { label: "8h+",  upTo: Infinity, score: 100 },
-            ],
+              { label: "<4h",  upTo: 4,    score: 0   },
+              { label: "4–6h", upTo: 6,    score: 50  },
+              { label: "6–7h", upTo: 7,    score: 80  },
+              { label: "7–8h", upTo: 8,    score: 90  },
+              { label: "8h+",  upTo: null, score: 100 }
+            ]
           },
           protein: {
-            label: "Protein", weight: 20,
-            type: "weighted_checklist", description: "80g target", cap: 80, displayUnit: "g",
+            label: "Protein", weight: 20, type: "weighted_checklist",
+            description: "80g daily target",
+            cap: 80, displayUnit: "g",
             items: {
-              eggs:          { label: "Eggs",           points: 30 },
-              chicken_fish:  { label: "Chicken / Fish", points: 40 },
-              protein_shake: { label: "Protein Shake",  points: 40 },
-              mutton:        { label: "Mutton",          points: 30 },
-              nuts:          { label: "Nuts",            points: 10 },
-            },
-          },
-        },
+              eggs:         { label: "Eggs",           points: 30 },
+              chicken_fish: { label: "Chicken / Fish", points: 40 },
+              protein_shake:{ label: "Protein Shake",  points: 40 },
+              mutton:       { label: "Mutton",         points: 30 },
+              nuts:         { label: "Nuts",           points: 10 }
+            }
+          }
+        }
       },
 
       mastery: {
         label: "Mastery", emoji: "🧠", color: "#a855f7",
         tagline: "Teach. Learn. Repeat.",
-        bg: "#0f0a1c", border: "#2d1a52",
-        bgLight: "#faf5ff", borderLight: "#e9d5ff",
         metrics: {
           learn: {
-            label: "Learn", weight: 40,
-            type: "tiered_number", description: "60 min target", unit: "min",
+            label: "Learn", weight: 40, type: "tiered_number",
+            description: "60 min daily target", unit: "min",
             tiers: [
-              { label: "<15m", upTo: 15,       score: 0   },
-              { label: "15m",  upTo: 30,       score: 25  },
-              { label: "30m",  upTo: 45,       score: 50  },
-              { label: "45m",  upTo: 60,       score: 75  },
-              { label: "60m+", upTo: Infinity, score: 100 },
-            ],
+              { label: "<15m", upTo: 15,   score: 0   },
+              { label: "15m",  upTo: 30,   score: 25  },
+              { label: "30m",  upTo: 45,   score: 50  },
+              { label: "45m",  upTo: 60,   score: 75  },
+              { label: "60m+", upTo: null, score: 100 }
+            ]
           },
           teach: {
-            label: "Teach", weight: 40,
-            type: "tiered_selector", cap: 100,
+            label: "Teach", weight: 40, type: "tiered_selector",
+            description: "Teaching sessions today",
+            cap: 100,
             groups: {
               level_a: {
                 label: "Level A",
                 tiers: [
                   { key: "none",   label: "None",    score: 0   },
                   { key: "30min",  label: "30 min",  score: 50  },
-                  { key: "60min",  label: "60 min",  score: 100 },
-                ],
+                  { key: "60min",  label: "60 min",  score: 100 }
+                ]
               },
               level_b: {
                 label: "Level B",
                 tiers: [
                   { key: "none",   label: "None",    score: 0   },
                   { key: "60min",  label: "60 min",  score: 50  },
-                  { key: "120min", label: "120 min", score: 100 },
-                ],
+                  { key: "120min", label: "120 min", score: 100 }
+                ]
               },
               camp: {
                 label: "Camp",
                 tiers: [
                   { key: "none",   label: "None",    score: 0   },
-                  { key: "120min", label: "120min+", score: 100 },
-                ],
-              },
-            },
+                  { key: "120min", label: "120min+", score: 100 }
+                ]
+              }
+            }
           },
-          organize: {
-            label: "Organize", weight: 20,
-            type: "compound",
-            items: {
-              training_plan:     { label: "Training Plan for Students", type: "bool" },
-              prepare_materials: {
-                label: "Prepare Materials", type: "tiered_number", unit: "min",
-                tiers: [
-                  { label: "0",    upTo: 15,       score: 0   },
-                  { label: "15m",  upTo: 30,       score: 50  },
-                  { label: "30m+", upTo: Infinity, score: 100 },
-                ],
-              },
-            },
-          },
-        },
+          read: {
+            label: "Read / Study", weight: 20, type: "tiered_number",
+            description: "Books, articles, analysis", unit: "min",
+            tiers: [
+              { label: "0",    upTo: 1,    score: 0   },
+              { label: "15m",  upTo: 20,   score: 40  },
+              { label: "30m",  upTo: 45,   score: 70  },
+              { label: "45m+", upTo: null, score: 100 }
+            ]
+          }
+        }
       },
 
       influence: {
         label: "Influence", emoji: "🌍", color: "#3b82f6",
         tagline: "10M people will know GM Akash",
-        bg: "#060f1c", border: "#0f2d52",
-        bgLight: "#eff6ff", borderLight: "#bfdbfe",
         metrics: {
           create: {
-            label: "Create", weight: 60,
-            type: "tiered_number", description: "Script / Video / Blog", unit: "min",
-            tiers: [
-              { label: "<30m", upTo: 30,       score: 0   },
-              { label: "30m",  upTo: 60,       score: 50  },
-              { label: "60m+", upTo: Infinity, score: 100 },
-            ],
+            label: "Create", weight: 60, type: "tiered_selector",
+            description: "Content created today",
+            cap: 100,
+            groups: {
+              content: {
+                label: "Content Type",
+                tiers: [
+                  { key: "none",  label: "None",               score: 0   },
+                  { key: "draft", label: "Draft / Idea",        score: 30  },
+                  { key: "short", label: "Short post",          score: 60  },
+                  { key: "long",  label: "Long-form / Video",   score: 100 }
+                ]
+              }
+            }
           },
-          engage: {
-            label: "Engage", weight: 30,
-            type: "tiered_number", description: "Comment / Story / Reply", unit: "min",
-            tiers: [
-              { label: "<15m", upTo: 15,       score: 0   },
-              { label: "15m",  upTo: 30,       score: 50  },
-              { label: "30m+", upTo: Infinity, score: 100 },
-            ],
-          },
-          research: {
-            label: "Research", weight: 10,
-            type: "tiered_number", description: "Research session", unit: "min",
-            tiers: [
-              { label: "<15m", upTo: 15,       score: 0   },
-              { label: "15m",  upTo: 30,       score: 30  },
-              { label: "30m",  upTo: 60,       score: 60  },
-              { label: "60m+", upTo: Infinity, score: 100 },
-            ],
-          },
-        },
+          outreach: {
+            label: "Outreach", weight: 40, type: "tiered_selector",
+            description: "Community & network engagement",
+            cap: 100,
+            groups: {
+              engage: {
+                label: "Engagement",
+                tiers: [
+                  { key: "none",  label: "None",              score: 0   },
+                  { key: "light", label: "Comments / Replies", score: 50  },
+                  { key: "deep",  label: "DMs / Collabs",      score: 100 }
+                ]
+              }
+            }
+          }
+        }
       },
 
       grounding: {
         label: "Grounding", emoji: "🌿", color: "#22c55e",
-        tagline: "Roots deep, legacy tall",
-        bg: "#041208", border: "#0d3a1a",
-        bgLight: "#f0fdf4", borderLight: "#bbf7d0",
+        tagline: "Stay rooted to what matters",
         metrics: {
           family: {
-            label: "Family", weight: 60,
-            type: "tiered_number", description: "60 min target", unit: "min",
+            label: "Family", weight: 35, type: "tiered_number",
+            description: "Quality time with family", unit: "min",
             tiers: [
-              { label: "<30m", upTo: 30,       score: 0   },
-              { label: "30m",  upTo: 50,       score: 50  },
-              { label: "50m+", upTo: Infinity, score: 100 },
-            ],
+              { label: "0",   upTo: 1,    score: 0   },
+              { label: "15m", upTo: 30,   score: 40  },
+              { label: "30m", upTo: 60,   score: 70  },
+              { label: "1h+", upTo: null, score: 100 }
+            ]
           },
           self: {
-            label: "Self", weight: 30,
-            type: "tiered_number", description: "30 min target", unit: "min",
+            label: "Self", weight: 20, type: "tiered_number",
+            description: "Journaling / reflection / self-care", unit: "min",
             tiers: [
-              { label: "<15m", upTo: 15,       score: 0   },
-              { label: "15m",  upTo: 30,       score: 50  },
-              { label: "30m+", upTo: Infinity, score: 100 },
-            ],
+              { label: "0",    upTo: 1,    score: 0   },
+              { label: "10m",  upTo: 15,   score: 50  },
+              { label: "20m",  upTo: 30,   score: 80  },
+              { label: "30m+", upTo: null, score: 100 }
+            ]
           },
           friends: {
-            label: "Friends", weight: 10,
-            type: "tiered_number", description: "30 min target", unit: "min",
+            label: "Friends", weight: 0, type: "tiered_number",
+            description: "Social connection (tracked, not scored)", unit: "min",
             tiers: [
-              { label: "<15m", upTo: 15,       score: 0   },
-              { label: "15m",  upTo: 30,       score: 50  },
-              { label: "30m+", upTo: Infinity, score: 100 },
-            ],
+              { label: "0",    upTo: 1,    score: 0   },
+              { label: "15m",  upTo: 30,   score: 50  },
+              { label: "30m+", upTo: null, score: 100 }
+            ]
           },
-        },
-      },
-    };
-
-    // ─── Seed data ────────────────────────────────────────────────────────────
-    const SEED_DATA = {
-      "2026-03-22": {
-        warrior:  { exercise: { morning_stretch:true, strength_training:true, cardio:false, sports:false, ankle_stretch:true }, sleep:7, protein:{ eggs:true, chicken_fish:true, protein_shake:false, mutton:false, nuts:true } },
-        mastery:  { learn:50, teach:{ level_a:"60min", level_b:"none", camp:"none" }, organize:{ training_plan:true, prepare_materials:20 } },
-        influence:{ create:45, engage:20, research:0 },
-        grounding:{ family:35, self:20, friends:0 },
-      },
-    };
-
-    const STORAGE_KEY = "four_pillars_v4";
-
-    // ─── Helpers ──────────────────────────────────────────────────────────────
-    function todayStr() { return new Date().toISOString().slice(0,10); }
-
-    function offsetDate(base, delta) {
-      const d = new Date(base + "T00:00:00");
-      d.setDate(d.getDate() + delta);
-      return d.toISOString().slice(0,10);
-    }
-
-    function last7(fromDate) {
-      return Array.from({ length:7 }, (_,i) => offsetDate(fromDate, i-6));
-    }
-
-    function scoreTieredNumber(tiers, value) {
-      const n = Number(value) || 0;
-      for (const tier of tiers) { if (n < tier.upTo) return tier.score / 100; }
-      return tiers[tiers.length-1].score / 100;
-    }
-
-    function metricScore(pillarKey, metricKey, value) {
-      const cfg = PILLARS[pillarKey].metrics[metricKey];
-      if (cfg.type === "bool") return value ? 1 : 0;
-      if (cfg.type === "weighted_checklist") {
-        if (!value) return 0;
-        const earned = Object.entries(cfg.items).reduce((s,[k,item]) => s + (value[k] ? item.points : 0), 0);
-        return Math.min(1, earned / cfg.cap);
-      }
-      if (cfg.type === "tiered_number") return scoreTieredNumber(cfg.tiers, value);
-      if (cfg.type === "tiered_selector") {
-        if (!value) return 0;
-        let total = 0;
-        for (const [gk,gcfg] of Object.entries(cfg.groups)) {
-          const sel = value[gk] ?? "none";
-          total += gcfg.tiers.find(t => t.key === sel)?.score ?? 0;
+          mindfulness: {
+            label: "Mindfulness", weight: 45, type: "tiered_number",
+            description: "Meditation / breathwork / gratitude", unit: "min",
+            tiers: [
+              { label: "0",    upTo: 1,    score: 0   },
+              { label: "5m",   upTo: 10,   score: 40  },
+              { label: "10m",  upTo: 20,   score: 70  },
+              { label: "20m+", upTo: null, score: 100 }
+            ]
+          }
         }
-        return Math.min(1, total / cfg.cap);
       }
-      if (cfg.type === "compound") {
-        if (!value) return 0;
-        const scores = Object.entries(cfg.items).map(([ik,icfg]) => {
-          const v = value[ik];
-          if (icfg.type === "bool")          return v ? 1 : 0;
-          if (icfg.type === "tiered_number") return scoreTieredNumber(icfg.tiers, v);
-          return 0;
-        });
-        return scores.length ? scores.reduce((a,b)=>a+b,0) / scores.length : 0;
+    };
+
+    // ── Scoring ────────────────────────────────────────────────────────────────────────────────────
+    function calcMetricScore(cfg, metricData) {
+      if (metricData === undefined || metricData === null) return 0;
+
+      if (cfg.type === 'weighted_checklist') {
+        if (typeof metricData !== 'object') return 0;
+        let pts = 0;
+        for (const [k, item] of Object.entries(cfg.items)) {
+          if (metricData[k]) pts += item.points;
+        }
+        return Math.min(pts, cfg.cap) / cfg.cap * 100;
       }
+
+      if (cfg.type === 'tiered_number') {
+        const val = parseFloat(metricData);
+        if (isNaN(val) || val < 0) return 0;
+        for (const tier of cfg.tiers) {
+          if (tier.upTo === null || val < tier.upTo) return tier.score;
+        }
+        return 0;
+      }
+
+      if (cfg.type === 'tiered_selector') {
+        if (typeof metricData !== 'object') return 0;
+        let maxScore = 0;
+        for (const [gk, group] of Object.entries(cfg.groups)) {
+          const sel = metricData[gk] || 'none';
+          const tier = group.tiers.find(t => t.key === sel);
+          if (tier && tier.score > maxScore) maxScore = tier.score;
+        }
+        return Math.min(maxScore, cfg.cap || 100);
+      }
+
       return 0;
     }
 
-    function pillarScore(pillarKey, metrics) {
-      if (!metrics) return 0;
-      const entries = Object.entries(PILLARS[pillarKey].metrics);
-      const totalW  = entries.reduce((s,[,mc]) => s + (mc.weight ?? 1), 0);
-      const sumW    = entries.reduce((s,[mk,mc]) => s + metricScore(pillarKey, mk, metrics[mk]) * (mc.weight ?? 1), 0);
-      return totalW > 0 ? sumW / totalW : 0;
-    }
-
-    function overallScore(dateData) {
-      if (!dateData) return 0;
-      const scores = Object.keys(PILLARS).map(pk => pillarScore(pk, dateData[pk]));
-      return scores.reduce((a,b)=>a+b,0) / scores.length;
-    }
-
-    function emptyForMetric(mc) {
-      if (mc.type === "bool")               return false;
-      if (mc.type === "tiered_number")      return 0;
-      if (mc.type === "weighted_checklist") return Object.fromEntries(Object.keys(mc.items).map(k=>[k,false]));
-      if (mc.type === "tiered_selector")    return Object.fromEntries(Object.keys(mc.groups).map(gk=>[gk,"none"]));
-      if (mc.type === "compound")           return Object.fromEntries(Object.entries(mc.items).map(([ik,icfg])=>[ik,emptyForMetric(icfg)]));
-      return null;
-    }
-
-    function perfectForMetric(mc) {
-      if (mc.type === "bool") return true;
-      if (mc.type === "tiered_number") {
-        const last = mc.tiers[mc.tiers.length-1];
-        const prev = mc.tiers[mc.tiers.length-2];
-        return last.upTo === Infinity ? (prev?.upTo ?? 0) + 1 : last.upTo;
+    function calcPillarScore(pillarCfg, pillarData) {
+      let weighted = 0, totalW = 0;
+      for (const [k, cfg] of Object.entries(pillarCfg.metrics)) {
+        const score = calcMetricScore(cfg, pillarData?.[k]);
+        weighted += score * cfg.weight;
+        totalW += cfg.weight;
       }
-      if (mc.type === "weighted_checklist") return Object.fromEntries(Object.keys(mc.items).map(k=>[k,true]));
-      if (mc.type === "tiered_selector")    return Object.fromEntries(Object.entries(mc.groups).map(([gk,gcfg])=>{
-        const best = gcfg.tiers.reduce((b,t)=>t.score>b.score?t:b, gcfg.tiers[0]);
-        return [gk, best.key];
-      }));
-      if (mc.type === "compound") return Object.fromEntries(Object.entries(mc.items).map(([ik,icfg])=>[ik,perfectForMetric(icfg)]));
-      return null;
+      return totalW > 0 ? weighted / totalW : 0;
     }
 
-    function emptyDayMetrics() {
-      const day = {};
-      for (const [pk,pc] of Object.entries(PILLARS)) {
-        day[pk] = {};
-        for (const [mk,mc] of Object.entries(pc.metrics)) day[pk][mk] = emptyForMetric(mc);
-      }
-      return day;
+    function overallScore(dayData) {
+      if (!dayData) return 0;
+      const keys = Object.keys(PILLARS);
+      return keys.reduce((sum, k) => sum + calcPillarScore(PILLARS[k], dayData[k]), 0) / keys.length;
     }
 
-    function perfectDayMetrics() {
-      const day = {};
-      for (const [pk,pc] of Object.entries(PILLARS)) {
-        day[pk] = {};
-        for (const [mk,mc] of Object.entries(pc.metrics)) day[pk][mk] = perfectForMetric(mc);
-      }
-      return day;
+    function scoreColor(score) {
+      if (score >= 80) return '#22c55e';
+      if (score >= 60) return '#84cc16';
+      if (score >= 40) return '#eab308';
+      if (score >= 20) return '#f97316';
+      return '#ef4444';
     }
 
-    function loadData() {
-      try { const raw = localStorage.getItem(STORAGE_KEY); if (raw) return JSON.parse(raw); } catch(_) {}
-      return { ...SEED_DATA };
-    }
-
-    function saveData(d) {
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(d)); } catch(_) {}
-    }
-
-    function fmtDate(s) {
-      return new Date(s+"T00:00:00").toLocaleDateString("en-US", { weekday:"short", month:"short", day:"numeric" });
-    }
-
-    function scoreColor(pct) {
-      if (pct >= 90) return "#22c55e";
-      if (pct >= 80) return "#f97316";
-      if (pct >= 70) return "#eab308";
-      if (pct > 0)   return "#ef4444";
-      return "#374151";
-    }
-
-    function scoreGlow(pct) {
-      return pct >= 100 ? "drop-shadow(0 0 8px #22c55e) drop-shadow(0 0 3px #22c55ecc)" : "none";
-    }
-
-    // ─── Ring ─────────────────────────────────────────────────────────────────
-    function Ring({ pct, color, size=72, stroke=7, glow=false, children }) {
-      const r = (size - stroke*2) / 2;
-      const circ = 2*Math.PI*r;
-      const filled = Math.min(1, Math.max(0, pct)) * circ;
+    // ── TrendBars — NO memo, always live ───────────────────────────────────────────────────────────
+    function TrendBars({ data, activeDate }) {
+      const days = last7Days();
+      const today = todayStr();
       return (
-        <svg width={size} height={size}
-          style={{ display:"block", flexShrink:0, filter: glow ? scoreGlow(100) : "none", transition:"filter 0.4s ease" }}>
-          <circle cx={size/2} cy={size/2} r={r} fill="none" stroke="var(--ring-track)" strokeWidth={stroke} />
-          <circle cx={size/2} cy={size/2} r={r} fill="none" stroke={color} strokeWidth={stroke}
-            strokeDasharray={`${filled} ${circ}`} strokeLinecap="round"
-            transform={`rotate(-90 ${size/2} ${size/2})`}
-            style={{ transition:"stroke-dasharray 0.5s ease" }} />
-          <foreignObject x={0} y={0} width={size} height={size}>
-            <div xmlns="http://www.w3.org/1999/xhtml"
-              style={{ display:"flex", alignItems:"center", justifyContent:"center", width:"100%", height:"100%", textAlign:"center" }}>
-              {children}
-            </div>
-          </foreignObject>
-        </svg>
-      );
-    }
-
-    // ─── TrendBars ────────────────────────────────────────────────────────────
-    function TrendBars({ values, color }) {
-      const max = Math.max(...values, 0.01);
-      return (
-        <div style={{ display:"flex", alignItems:"flex-end", gap:2, height:28 }}>
-          {values.map((v,i) => (
-            <div key={i} style={{
-              flex:1, height: Math.max(3,(v/max)*28), background:color, borderRadius:3,
-              opacity: 0.25 + 0.09*i + (i===values.length-1 ? 0.32:0), transition:"height 0.4s ease",
-            }} />
-          ))}
-        </div>
-      );
-    }
-
-    // ─── Toggle ───────────────────────────────────────────────────────────────
-    function Toggle({ value, onChange, color }) {
-      return (
-        <button onClick={e=>{ e.stopPropagation(); onChange(!value); }}
-          style={{ width:44, height:24, borderRadius:12, background: value ? color : "var(--toggle-off)",
-                   border:"none", cursor:"pointer", display:"flex", alignItems:"center", padding:"0 3px",
-                   justifyContent: value ? "flex-end" : "flex-start", transition:"background 0.2s", flexShrink:0 }}>
-          <div style={{ width:18, height:18, borderRadius:"50%", background:"#fff", boxShadow:"0 1px 3px rgba(0,0,0,0.4)" }} />
-        </button>
-      );
-    }
-
-    // ─── Bool Row ─────────────────────────────────────────────────────────────
-    function BoolRow({ pillarKey, meta, value, onChange }) {
-      const { color } = PILLARS[pillarKey];
-      const done = !!value;
-      return (
-        <div onClick={() => onChange(!done)}
-          style={{ display:"flex", alignItems:"center", justifyContent:"space-between",
-                   padding:"11px 0", borderBottom:"1px solid var(--divider-light)",
-                   cursor:"pointer", userSelect:"none" }}>
-          <div style={{ display:"flex", alignItems:"center", gap:10 }}>
-            <div style={{ width:20, height:20, borderRadius:6, border:`2px solid ${done ? color : "var(--border-muted)"}`,
-                          background: done ? color+"33" : "transparent",
-                          display:"flex", alignItems:"center", justifyContent:"center",
-                          flexShrink:0, transition:"all 0.15s" }}>
-              {done && <span style={{ color, fontSize:12, lineHeight:1 }}>✓</span>}
-            </div>
-            <span style={{ color: done ? "var(--text)" : "var(--text-muted)", fontSize:14, transition:"color 0.15s" }}>{meta.label}</span>
-          </div>
-          <Toggle value={done} onChange={onChange} color={color} />
-        </div>
-      );
-    }
-
-    // ─── Weighted Checklist ───────────────────────────────────────────────────
-    function WeightedChecklist({ pillarKey, cfg, value, onChange }) {
-      const { color } = PILLARS[pillarKey];
-      const earned = value ? Object.entries(cfg.items).reduce((s,[k,item]) => s+(value[k]?item.points:0), 0) : 0;
-      const pct = Math.min(100, Math.round((earned/cfg.cap)*100));
-      const u = cfg.displayUnit;
-      return (
-        <div>
-          <div style={{ display:"flex", justifyContent:"space-between", marginBottom:6 }}>
-            <span style={{ color:"var(--text-dim)", fontSize:12 }}>{cfg.description}</span>
-            <span style={{ fontWeight:700, fontSize:13, color: pct>=100 ? color : "var(--text-muted)" }}>
-              {earned}{u}<span style={{ color:"var(--text-faint)", fontWeight:400 }}> / {cfg.cap}{u}</span>
-            </span>
-          </div>
-          <div style={{ height:5, background:"var(--border)", borderRadius:3, overflow:"hidden", marginBottom:10 }}>
-            <div style={{ height:"100%", width:`${pct}%`, background: pct>=100 ? color : color+"bb",
-                          borderRadius:3, transition:"width 0.35s" }} />
-          </div>
-          {Object.entries(cfg.items).map(([k,item]) => {
-            const checked = value?.[k] ?? false;
+        <div className="trend-chart">
+          {days.map((d) => {
+            const sc = Math.round(overallScore(data[d]));
+            const col = scoreColor(sc);
+            const isToday = d === today;
+            const isActive = d === activeDate;
             return (
-              <div key={k} onClick={() => onChange({ ...(value||{}), [k]: !checked })}
-                style={{ display:"flex", alignItems:"center", justifyContent:"space-between",
-                         padding:"9px 0", borderBottom:"1px solid var(--divider-faint)",
-                         cursor:"pointer", userSelect:"none" }}>
-                <div style={{ display:"flex", alignItems:"center", gap:10 }}>
-                  <div style={{ width:18, height:18, borderRadius:5, border:`2px solid ${checked ? color : "var(--border-muted)"}`,
-                                background: checked ? color+"33" : "transparent",
-                                display:"flex", alignItems:"center", justifyContent:"center",
-                                flexShrink:0, transition:"all 0.15s" }}>
-                    {checked && <span style={{ color, fontSize:11, lineHeight:1 }}>✓</span>}
-                  </div>
-                  <span style={{ color: checked ? "var(--text-secondary)" : "var(--text-muted)", fontSize:13 }}>{item.label}</span>
+              <div key={d} className="trend-col">
+                <div className="trend-bar-wrap">
+                  <div
+                    className="trend-bar"
+                    style={{
+                      height: sc > 0 ? `${sc}%` : '3px',
+                      background: col,
+                      opacity: isActive ? 1 : isToday ? 0.85 : 0.4,
+                      boxShadow: isActive && sc > 0 ? `0 0 10px ${col}60` : 'none',
+                    }}
+                  />
                 </div>
-                <span style={{ color: checked ? color : "var(--text-faint)", fontSize:12, fontWeight:700,
-                               background: checked ? color+"15" : "transparent",
-                               padding:"2px 8px", borderRadius:6, transition:"all 0.15s" }}>
-                  +{item.points}{u}
+                <span className={`trend-day${isToday ? ' today' : ''}`}>
+                  {dayLetter(d)}
                 </span>
               </div>
             );
@@ -534,72 +740,124 @@
       );
     }
 
-    // ─── Tiered Number Input ──────────────────────────────────────────────────
-    function TieredInput({ pillarKey, cfg, value, onChange, compact=false }) {
-      const { color } = PILLARS[pillarKey];
-      const n = Number(value) || 0;
-      let tierIdx = cfg.tiers.length-1;
-      for (let i=0; i<cfg.tiers.length; i++) { if (n < cfg.tiers[i].upTo) { tierIdx=i; break; } }
-      const currentScore = cfg.tiers[tierIdx].score;
-      const scoreHue = currentScore > 0 ? scoreColor(currentScore) : "var(--text-dim)";
-      const tierCenters = cfg.tiers.map((tier,i) =>
-        tier.upTo === Infinity ? (cfg.tiers[i-1]?.upTo ?? 0)+1 : ((cfg.tiers[i-1]?.upTo ?? 0)+tier.upTo)/2
+    // ── Score Ring SVG ─────────────────────────────────────────────────────────────────────────────
+    function ScoreRing({ score, color, size = 72 }) {
+      const r = size / 2 - 6;
+      const circ = 2 * Math.PI * r;
+      const offset = circ * (1 - Math.max(0, Math.min(100, score)) / 100);
+      return (
+        <div className="score-ring" style={{ width: size, height: size }}>
+          <svg width={size} height={size}>
+            <circle cx={size/2} cy={size/2} r={r} fill="none" stroke="#1e1e2e" strokeWidth="5" />
+            <circle cx={size/2} cy={size/2} r={r} fill="none" stroke={color} strokeWidth="5"
+              strokeDasharray={circ} strokeDashoffset={offset} strokeLinecap="round"
+              style={{ transition: 'stroke-dashoffset 0.5s ease' }} />
+          </svg>
+          <div className="score-ring-text">
+            <span className="score-big" style={{ color }}>{Math.round(score)}</span>
+            <span className="score-pct">%</span>
+          </div>
+        </div>
       );
-      const isHrs = cfg.unit === "hrs";
+    }
+
+    // ── Metric Inputs ──────────────────────────────────────────────────────────────────────────────
+    function ChecklistMetric({ cfg, value, color, onChange }) {
+      const checked = value || {};
+      let pts = 0;
+      for (const [k, item] of Object.entries(cfg.items)) {
+        if (checked[k]) pts += item.points;
+      }
+      const score = Math.round(Math.min(pts, cfg.cap) / cfg.cap * 100);
+
       return (
         <div>
-          {!compact && (
-            <div style={{ display:"flex", alignItems:"center", gap:14, marginBottom:14 }}>
-              <div style={{ position:"relative" }}>
-                <input type="number" min={0} max={isHrs?12:180} step={isHrs?0.5:5}
-                  value={n||""} placeholder="0"
-                  onChange={e => onChange(Number(e.target.value)||0)}
-                  style={{ width:68, background:"var(--bg-input)", border:`1px solid ${currentScore>=50?color:"var(--border-muted)"}`,
-                           borderRadius:12, padding:"10px 8px", color:"var(--text)",
-                           fontSize:22, textAlign:"center", outline:"none", fontWeight:700, transition:"border-color 0.2s" }} />
-                <span style={{ position:"absolute", bottom:-14, left:0, right:0,
-                               textAlign:"center", color:"var(--text-dim)", fontSize:10 }}>{cfg.unit}</span>
+          <div className="checklist-items">
+            {Object.entries(cfg.items).map(([k, item]) => (
+              <div
+                key={k}
+                className={`check-item${checked[k] ? ' checked' : ''}`}
+                style={{ color }}
+                onClick={() => onChange({ ...checked, [k]: !checked[k] })}
+              >
+                <div className="check-box">{checked[k] ? '✓' : ''}</div>
+                <span className="check-label">{item.label}</span>
+                <span className="check-pts">+{item.points} {cfg.displayUnit}</span>
               </div>
-              <div>
-                <div style={{ fontSize:28, fontWeight:800, lineHeight:1, color:scoreHue, transition:"color 0.2s",
-                              textShadow: currentScore>=100 ? `0 0 12px ${scoreHue}` : "none" }}>{currentScore}</div>
-                <div style={{ color:"var(--text-dim)", fontSize:11, marginTop:2 }}>/ 100 pts</div>
-              </div>
-              <div style={{ flex:1 }}>
-                {cfg.description && <div style={{ color:"var(--text-muted)", fontSize:11, marginBottom:4 }}>{cfg.description}</div>}
-                <div style={{ height:5, background:"var(--border)", borderRadius:3, overflow:"hidden" }}>
-                  <div style={{ height:"100%", width:`${currentScore}%`, background:scoreHue, borderRadius:3, transition:"width 0.4s" }} />
-                </div>
-              </div>
+            ))}
+          </div>
+          <div className="checklist-progress">
+            <div className="progress-bar">
+              <div className="progress-fill" style={{ width: `${score}%`, background: color }} />
             </div>
-          )}
-          {compact && (
-            <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:10 }}>
-              <input type="number" min={0} max={isHrs?12:180} step={isHrs?0.5:5}
-                value={n||""} placeholder="0"
-                onChange={e => onChange(Number(e.target.value)||0)}
-                style={{ width:56, background:"var(--bg-input)", border:`1px solid ${currentScore>=50?color:"var(--border-muted)"}`,
-                         borderRadius:8, padding:"6px", color:"var(--text)",
-                         fontSize:16, textAlign:"center", outline:"none", fontWeight:700 }} />
-              <span style={{ color:"var(--text-dim)", fontSize:11 }}>{cfg.unit}</span>
-              <div style={{ flex:1, height:5, background:"var(--border)", borderRadius:3, overflow:"hidden" }}>
-                <div style={{ height:"100%", width:`${currentScore}%`, background:scoreHue, borderRadius:3, transition:"width 0.4s" }} />
-              </div>
-              <span style={{ color:scoreHue, fontWeight:700, fontSize:13, minWidth:36, textAlign:"right" }}>{currentScore}pts</span>
-            </div>
-          )}
-          <div style={{ display:"flex", gap:4 }}>
-            {cfg.tiers.map((tier,i) => {
-              const active = tierIdx===i;
+            <span className="progress-label" style={{ color }}>
+              {Math.min(pts, cfg.cap)}/{cfg.cap} {cfg.displayUnit}
+            </span>
+          </div>
+        </div>
+      );
+    }
+
+    function TieredNumberMetric({ cfg, value, color, onChange }) {
+      const strVal = (value !== undefined && value !== null) ? String(value) : '';
+      const numVal = parseFloat(strVal);
+
+      let activeTier = null;
+      if (!isNaN(numVal)) {
+        for (const tier of cfg.tiers) {
+          if (tier.upTo === null || numVal < tier.upTo) { activeTier = tier; break; }
+        }
+      }
+
+      function pickTier(tier) {
+        // tap a pill → snap to midpoint of that tier
+        if (tier.upTo === null) {
+          const prev = cfg.tiers[cfg.tiers.length - 2];
+          onChange(String(prev ? prev.upTo : 0));
+        } else {
+          const prevUpTo = cfg.tiers[cfg.tiers.indexOf(tier) - 1]?.upTo || 0;
+          onChange(String(prevUpTo + (tier.upTo - prevUpTo) / 2));
+        }
+      }
+
+      return (
+        <div className="tier-number-wrap">
+          <div className="tier-number-input">
+            <input
+              type="number"
+              className="num-input"
+              value={strVal}
+              min="0"
+              step="0.5"
+              placeholder="0"
+              style={{ borderColor: activeTier ? color : undefined }}
+              onChange={e => onChange(e.target.value)}
+            />
+            <span className="num-unit">{cfg.unit}</span>
+            {activeTier && (
+              <span style={{
+                fontSize: 13, fontWeight: 700, color,
+                marginLeft: 'auto',
+                background: `${color}20`,
+                padding: '4px 12px',
+                borderRadius: 20,
+              }}>
+                {activeTier.score}%
+              </span>
+            )}
+          </div>
+          <div className="tier-pills">
+            {cfg.tiers.map((tier) => {
+              const isActive = activeTier?.label === tier.label;
               return (
-                <button key={i} onClick={() => onChange(tierCenters[i])}
-                  style={{ flex:1, padding:"7px 2px", borderRadius:8,
-                           border:`1px solid ${active?color:"var(--border)"}`,
-                           background: active ? color+"22" : "var(--bg-item)",
-                           cursor:"pointer", transition:"all 0.15s" }}>
-                  <div style={{ color: active?color:"var(--text-dim)", fontSize:10, fontWeight:600, marginBottom:1 }}>{tier.label}</div>
-                  <div style={{ color: active?color:"var(--text-faint)", fontSize:11, fontWeight:700 }}>{tier.score}</div>
-                </button>
+                <div
+                  key={tier.label}
+                  className={`tier-pill${isActive ? ' active' : ''}`}
+                  style={{ color: isActive ? color : undefined }}
+                  onClick={() => pickTier(tier)}
+                >
+                  {tier.label}
+                </div>
               );
             })}
           </div>
@@ -607,53 +865,43 @@
       );
     }
 
-    // ─── Tiered Selector ─────────────────────────────────────────────────────
-    function TieredSelector({ pillarKey, cfg, value, onChange }) {
-      const { color } = PILLARS[pillarKey];
-      let totalScore = 0;
-      for (const [gk,gcfg] of Object.entries(cfg.groups)) {
-        const sel = value?.[gk] ?? "none";
-        totalScore += gcfg.tiers.find(t => t.key===sel)?.score ?? 0;
+    function TieredSelectorMetric({ cfg, value, color, onChange }) {
+      const sels = value || {};
+
+      function select(groupKey, key) {
+        onChange({ ...sels, [groupKey]: sels[groupKey] === key ? 'none' : key });
       }
-      const pct = Math.min(100, Math.round((totalScore/cfg.cap)*100));
+
       return (
-        <div>
-          <div style={{ display:"flex", justifyContent:"space-between", marginBottom:6 }}>
-            <span style={{ color:"var(--text-dim)", fontSize:12 }}>Session score</span>
-            <span style={{ fontWeight:700, fontSize:13, color: pct>=100?color:"var(--text-muted)" }}>
-              {Math.min(totalScore,cfg.cap)}pts<span style={{ color:"var(--text-faint)", fontWeight:400 }}> / {cfg.cap}pts</span>
-            </span>
-          </div>
-          <div style={{ height:5, background:"var(--border)", borderRadius:3, overflow:"hidden", marginBottom:14 }}>
-            <div style={{ height:"100%", width:`${pct}%`, background: pct>=100?color:color+"bb",
-                          borderRadius:3, transition:"width 0.35s" }} />
-          </div>
-          {Object.entries(cfg.groups).map(([gk,gcfg]) => {
-            const selected = value?.[gk] ?? "none";
+        <div className="tier-selector-groups">
+          {Object.entries(cfg.groups).map(([gk, group]) => {
+            const selected = sels[gk] || 'none';
             return (
-              <div key={gk} style={{ marginBottom:10 }}>
-                <div style={{ color:"var(--text-muted)", fontSize:11, fontWeight:600,
-                              textTransform:"uppercase", letterSpacing:0.4, marginBottom:6 }}>{gcfg.label}</div>
-                <div style={{ display:"flex", gap:4 }}>
-                  {gcfg.tiers.map(tier => {
-                    const active = selected===tier.key;
+              <div key={gk}>
+                <div className="tier-group-label">{group.label}</div>
+                <div className="tier-group-pills">
+                  {group.tiers.filter(t => t.key !== 'none').map((tier) => {
+                    const isActive = selected === tier.key;
                     return (
-                      <button key={tier.key} onClick={() => onChange({ ...(value||{}), [gk]:tier.key })}
-                        style={{ flex: tier.key==="none" ? "0 0 44px" : 1, padding:"7px 6px", borderRadius:8,
-                                 border:`1px solid ${active?color:"var(--border)"}`,
-                                 background: active ? color+"22" : "var(--bg-item)",
-                                 cursor:"pointer", transition:"all 0.15s" }}>
-                        {tier.key==="none" ? (
-                          <span style={{ color: active?color:"var(--border-muted)", fontSize:14 }}>✕</span>
-                        ) : (
-                          <>
-                            <div style={{ color: active?color:"var(--text-muted)", fontSize:11, fontWeight:600, marginBottom:1 }}>{tier.label}</div>
-                            <div style={{ color: active?color:"var(--text-faint)", fontSize:11, fontWeight:700 }}>{tier.score}pts</div>
-                          </>
-                        )}
-                      </button>
+                      <div
+                        key={tier.key}
+                        className={`tier-pill${isActive ? ' active' : ''}`}
+                        style={{ color: isActive ? color : undefined }}
+                        onClick={() => select(gk, tier.key)}
+                      >
+                        {tier.label}
+                      </div>
                     );
                   })}
+                  {selected !== 'none' && (
+                    <div
+                      className="tier-pill"
+                      style={{ color: 'var(--text-muted)' }}
+                      onClick={() => onChange({ ...sels, [gk]: 'none' })}
+                    >
+                      ✕
+                    </div>
+                  )}
                 </div>
               </div>
             );
@@ -662,505 +910,274 @@
       );
     }
 
-    // ─── Compound Metric ──────────────────────────────────────────────────────
-    function CompoundMetric({ pillarKey, cfg, value, onChange }) {
-      const { color } = PILLARS[pillarKey];
-      const subScores = Object.entries(cfg.items).map(([ik,icfg]) => {
-        const v = value?.[ik];
-        if (icfg.type==="bool")          return v ? 1 : 0;
-        if (icfg.type==="tiered_number") return scoreTieredNumber(icfg.tiers, v);
-        return 0;
-      });
-      const avgPct = subScores.length ? Math.round(subScores.reduce((a,b)=>a+b,0)/subScores.length*100) : 0;
-      return (
-        <div>
-          <div style={{ height:5, background:"var(--border)", borderRadius:3, overflow:"hidden", marginBottom:12 }}>
-            <div style={{ height:"100%", width:`${avgPct}%`, background:color, borderRadius:3, transition:"width 0.35s" }} />
-          </div>
-          {Object.entries(cfg.items).map(([ik,icfg],idx,arr) => {
-            const v = value?.[ik];
-            const isLast = idx===arr.length-1;
-            if (icfg.type==="bool") {
-              const done = !!v;
-              return (
-                <div key={ik} onClick={() => onChange({ ...(value||{}), [ik]:!done })}
-                  style={{ display:"flex", alignItems:"center", justifyContent:"space-between",
-                           padding:"10px 0", cursor:"pointer", userSelect:"none",
-                           borderBottom: isLast?"none":"1px solid var(--divider-light)" }}>
-                  <div style={{ display:"flex", alignItems:"center", gap:10 }}>
-                    <div style={{ width:18, height:18, borderRadius:5, border:`2px solid ${done?color:"var(--border-muted)"}`,
-                                  background: done?color+"33":"transparent",
-                                  display:"flex", alignItems:"center", justifyContent:"center",
-                                  flexShrink:0, transition:"all 0.15s" }}>
-                      {done && <span style={{ color, fontSize:11, lineHeight:1 }}>✓</span>}
-                    </div>
-                    <span style={{ color: done?"var(--text-secondary)":"var(--text-muted)", fontSize:13 }}>{icfg.label}</span>
-                  </div>
-                  <Toggle value={done} onChange={val => onChange({ ...(value||{}), [ik]:val })} color={color} />
-                </div>
-              );
-            }
-            if (icfg.type==="tiered_number") {
-              return (
-                <div key={ik} style={{ paddingTop:10 }}>
-                  <div style={{ color:"var(--text-secondary)", fontSize:13, fontWeight:500, marginBottom:8 }}>{icfg.label}</div>
-                  <TieredInput pillarKey={pillarKey} cfg={{ ...icfg, description:"" }}
-                    value={v??0} onChange={val => onChange({ ...(value||{}), [ik]:val })} compact={true} />
-                </div>
-              );
-            }
-            return null;
-          })}
-        </div>
-      );
-    }
+    // ── MetricCard ─────────────────────────────────────────────────────────────────────────────────
+    function MetricCard({ metricKey, cfg, pillarData, color, onUpdate }) {
+      const value = pillarData?.[metricKey];
+      const score = Math.round(calcMetricScore(cfg, value));
 
-    // ─── Pillar Section ───────────────────────────────────────────────────────
-    function PillarSection({ pillarKey, metrics, onChange, isActive }) {
-      const darkMode = useContext(DarkCtx);
-      const [open, setOpen] = useState(true);
-      const cfg = PILLARS[pillarKey];
-      const ref = useRef(null);
-      useEffect(() => {
-        if (isActive && ref.current) {
-          setOpen(true);
-          setTimeout(() => ref.current?.scrollIntoView({ behavior:"smooth", block:"start" }), 80);
-        }
-      }, [isActive]);
-      const pct = Math.round(pillarScore(pillarKey, metrics) * 100);
-      const cardBg     = darkMode ? cfg.bg     : cfg.bgLight;
-      const cardBorder = darkMode ? cfg.border : cfg.borderLight;
       return (
-        <div ref={ref} style={{ background:cardBg, border:`1px solid ${cardBorder}`, borderRadius:16, overflow:"hidden", marginBottom:12,
-                               outline: isActive ? `2px solid ${cfg.color}66` : "none", transition:"outline 0.3s" }}>
-          <button onClick={() => setOpen(o=>!o)} style={{
-            width:"100%", display:"flex", alignItems:"center", justifyContent:"space-between",
-            padding:"14px 16px", background:"transparent", border:"none", cursor:"pointer" }}>
-            <div style={{ display:"flex", alignItems:"center", gap:12 }}>
-              <span style={{ fontSize:22 }}>{cfg.emoji}</span>
-              <div style={{ textAlign:"left" }}>
-                <div style={{ color:"var(--text)", fontWeight:600, fontSize:14 }}>{cfg.label}</div>
-                <div style={{ color:cfg.color, fontSize:11, marginTop:1 }}>{pct}% today</div>
-              </div>
-            </div>
-            <div style={{ display:"flex", alignItems:"center", gap:10 }}>
-              <div style={{ width:80, height:6, background:"var(--border)", borderRadius:3, overflow:"hidden" }}>
-                <div style={{ height:"100%", width:`${pct}%`, background:cfg.color, borderRadius:3, transition:"width 0.4s" }} />
-              </div>
-              <span style={{ color:"var(--text-dim)", fontSize:12 }}>{open?"▲":"▼"}</span>
-            </div>
-          </button>
-          {open && (
-            <div style={{ padding:"0 16px 14px" }}>
-              {Object.entries(cfg.metrics).map(([mk,mc],idx,arr) => {
-                const isLast = idx===arr.length-1;
-                const wrap = isLast ? {} : { borderBottom:"1px solid var(--divider)", marginBottom:14, paddingBottom:14 };
-                const mPct = Math.round(metricScore(pillarKey, mk, metrics?.[mk]) * 100);
-                const wtLabel = mc.weight != null ? `×${mc.weight}` : "";
-                const header = (
-                  <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:8 }}>
-                    <div style={{ display:"flex", alignItems:"center", gap:6 }}>
-                      <span style={{ color:"var(--text-secondary)", fontWeight:600, fontSize:13 }}>{mc.label}</span>
-                      {wtLabel && (
-                        <span style={{ color:cfg.color, fontSize:10, fontWeight:700,
-                                       background:cfg.color+"18", padding:"1px 5px", borderRadius:4 }}>{wtLabel}</span>
-                      )}
-                    </div>
-                    <span style={{ color: mPct>=100?cfg.color:"var(--text-dim)", fontSize:11 }}>{mPct}%</span>
-                  </div>
-                );
-                if (mc.type==="bool") return (
-                  <div key={mk} style={wrap}>
-                    <BoolRow pillarKey={pillarKey} meta={mc} value={metrics?.[mk]??false} onChange={val=>onChange(pillarKey,mk,val)} />
-                  </div>
-                );
-                if (mc.type==="weighted_checklist") return (
-                  <div key={mk} style={wrap}>{header}
-                    <WeightedChecklist pillarKey={pillarKey} cfg={mc} value={metrics?.[mk]??null} onChange={val=>onChange(pillarKey,mk,val)} />
-                  </div>
-                );
-                if (mc.type==="tiered_number") return (
-                  <div key={mk} style={wrap}>{header}
-                    <TieredInput pillarKey={pillarKey} cfg={mc} value={metrics?.[mk]??0} onChange={val=>onChange(pillarKey,mk,val)} />
-                  </div>
-                );
-                if (mc.type==="tiered_selector") return (
-                  <div key={mk} style={wrap}>{header}
-                    <TieredSelector pillarKey={pillarKey} cfg={mc} value={metrics?.[mk]??null} onChange={val=>onChange(pillarKey,mk,val)} />
-                  </div>
-                );
-                if (mc.type==="compound") return (
-                  <div key={mk} style={wrap}>{header}
-                    <CompoundMetric pillarKey={pillarKey} cfg={mc} value={metrics?.[mk]??null} onChange={val=>onChange(pillarKey,mk,val)} />
-                  </div>
-                );
-                return null;
-              })}
-            </div>
+        <div className="metric-card" style={{ borderColor: score > 0 ? `${color}40` : undefined }}>
+          <div className="metric-header">
+            <span className="metric-name">{cfg.label}</span>
+            <span className="metric-score-badge" style={{ color: score > 0 ? color : undefined }}>
+              {score}%
+            </span>
+          </div>
+          {cfg.description && <div className="metric-desc">{cfg.description}</div>}
+
+          {cfg.type === 'weighted_checklist' && (
+            <ChecklistMetric cfg={cfg} value={value} color={color}
+              onChange={v => onUpdate(metricKey, v)} />
+          )}
+          {cfg.type === 'tiered_number' && (
+            <TieredNumberMetric cfg={cfg} value={value} color={color}
+              onChange={v => onUpdate(metricKey, v)} />
+          )}
+          {cfg.type === 'tiered_selector' && (
+            <TieredSelectorMetric cfg={cfg} value={value} color={color}
+              onChange={v => onUpdate(metricKey, v)} />
           )}
         </div>
       );
     }
 
-    // ─── Pillar Card ──────────────────────────────────────────────────────────
-    function PillarCard({ pillarKey, score, trendValues, onTrack }) {
-      const darkMode = useContext(DarkCtx);
-      const cfg = PILLARS[pillarKey];
-      const pct = Math.round(score * 100);
-      const sc  = scoreColor(pct);
-      const cardBg     = darkMode ? cfg.bg     : cfg.bgLight;
-      const cardBorder = darkMode ? cfg.border : cfg.borderLight;
+    // ── PillarView ─────────────────────────────────────────────────────────────────────────────────
+    function PillarView({ pillarKey, data, date, setData, onBack, onSave, saved }) {
+      const pillar = PILLARS[pillarKey];
+      const color  = pillar.color;
+      const score  = Math.round(calcPillarScore(pillar, data[date]?.[pillarKey]));
+
+      const updateMetric = useCallback((metricKey, val) => {
+        setData(prev => {
+          const dayData    = prev[date] || {};
+          const pillarData = dayData[pillarKey] || {};
+          return {
+            ...prev,
+            [date]: { ...dayData, [pillarKey]: { ...pillarData, [metricKey]: val } }
+          };
+        });
+      }, [date, pillarKey, setData]);
+
       return (
-        <div onClick={() => onTrack(pillarKey)}
-          style={{ background:cardBg, border:`1px solid ${cardBorder}`, borderRadius:16, padding:16,
-                   cursor:"pointer", userSelect:"none", transition:"border-color 0.15s, transform 0.1s",
-                   WebkitTapHighlightColor:"transparent" }}
-          onTouchStart={e => e.currentTarget.style.transform="scale(0.97)"}
-          onTouchEnd={e => e.currentTarget.style.transform="scale(1)"}
-          onMouseDown={e => e.currentTarget.style.transform="scale(0.97)"}
-          onMouseUp={e => e.currentTarget.style.transform="scale(1)"}
-        >
-          <div style={{ display:"flex", alignItems:"center", gap:12, marginBottom:6 }}>
-            <Ring pct={score} color={sc} size={56} stroke={6} glow={pct>=100}>
-              <span style={{ fontSize:18 }}>{cfg.emoji}</span>
-            </Ring>
-            <div>
-              <div style={{ color:"var(--text-muted)", fontSize:11 }}>{cfg.label}</div>
-              <div style={{ color:sc, fontWeight:700, fontSize:22, lineHeight:1.1,
-                            textShadow: pct>=100 ? `0 0 10px ${sc}` : "none" }}>{pct}%</div>
+        <>
+          <div className="scroll-area">
+            <div className="page">
+              {/* Pillar header */}
+              <div className="pillar-header" style={{ borderColor: `${color}30` }}>
+                <button className="back-btn" onClick={onBack}>← Back</button>
+                <div className="pillar-header-main">
+                  <span className="pillar-header-emoji">{pillar.emoji}</span>
+                  <div>
+                    <div style={{ fontWeight: 700, fontSize: 18 }}>{pillar.label}</div>
+                    <div style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 1 }}>{pillar.tagline}</div>
+                  </div>
+                  <span className="pillar-header-score" style={{ color }}>{score}%</span>
+                </div>
+              </div>
+
+              {/* Metrics */}
+              <div className="metrics-list">
+                {Object.entries(pillar.metrics).map(([mk, cfg]) => (
+                  <MetricCard
+                    key={mk}
+                    metricKey={mk}
+                    cfg={cfg}
+                    pillarData={data[date]?.[pillarKey]}
+                    color={color}
+                    onUpdate={updateMetric}
+                  />
+                ))}
+              </div>
             </div>
           </div>
-          <div style={{ color:cfg.color, fontSize:10, fontWeight:500, marginBottom:10, opacity:0.85, fontStyle:"italic" }}>
-            {cfg.tagline}
+
+          {/* Save */}
+          <div className="save-row">
+            <button
+              className="save-btn"
+              onClick={onSave}
+              style={{ background: saved ? '#22c55e' : color, color: '#000' }}
+            >
+              {saved ? '✓  Saved!' : 'Save'}
+            </button>
           </div>
-          <TrendBars values={trendValues} color={cfg.color} />
-          <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginTop:8 }}>
-            <span style={{ color:"var(--text-dim)", fontSize:11 }}>7-day</span>
-            <span style={{ background:cfg.color+"22", color:cfg.color,
-              border:`1px solid ${cfg.color}44`, borderRadius:8, padding:"3px 10px", fontSize:11 }}>Log →</span>
+        </>
+      );
+    }
+
+    // ── Dashboard ──────────────────────────────────────────────────────────────────────────────────
+    function Dashboard({ data, date, setDate, onSelectPillar }) {
+      const dayData = data[date];
+      const overall = Math.round(overallScore(dayData));
+      const overCol = scoreColor(overall);
+      const today   = todayStr();
+
+      function changeDate(delta) {
+        const d = new Date(date + 'T00:00:00');
+        d.setDate(d.getDate() + delta);
+        const next = d.toISOString().slice(0, 10);
+        if (next <= today) setDate(next);
+      }
+
+      const mood = overall === 0
+        ? 'Log your day below ↓'
+        : overall >= 80 ? 'Crushing it 🔥'
+        : overall >= 60 ? 'Solid progress'
+        : overall >= 40 ? 'Keep going'
+        : 'Just getting started';
+
+      return (
+        <div className="scroll-area">
+          <div className="page">
+            {/* Overall */}
+            <div className="overall-section">
+              <ScoreRing score={overall} color={overCol} />
+              <div className="overall-info">
+                <div className="overall-label">{mood}</div>
+                <div className="overall-sub">{fmtDate(date)} · Overall score</div>
+              </div>
+            </div>
+
+            {/* Date nav */}
+            <div className="date-row">
+              <button className="date-btn" onClick={() => changeDate(-1)}>‹</button>
+              <div className="date-display">{fmtDate(date)}</div>
+              <button
+                className="date-btn"
+                onClick={() => changeDate(1)}
+                style={{ opacity: date >= today ? 0.25 : 1 }}
+                disabled={date >= today}
+              >›</button>
+            </div>
+
+            {/* 7-day trend — receives live data, no memoization */}
+            <div className="trend-section">
+              <div className="section-title">7-Day Trend</div>
+              <TrendBars data={data} activeDate={date} />
+            </div>
+
+            <div className="divider" />
+
+            {/* Pillar grid */}
+            <div className="pillar-grid">
+              {Object.entries(PILLARS).map(([key, pillar]) => {
+                const ps  = Math.round(calcPillarScore(pillar, dayData?.[key]));
+                const col = ps > 0 ? pillar.color : 'var(--text-muted)';
+                return (
+                  <button
+                    key={key}
+                    className="pillar-card"
+                    onClick={() => onSelectPillar(key)}
+                    style={{ borderColor: ps > 0 ? `${pillar.color}40` : undefined }}
+                  >
+                    <div className="card-emoji">{pillar.emoji}</div>
+                    <div className="card-label">{pillar.label}</div>
+                    <div className="card-score" style={{ color: col }}>
+                      {ps > 0 ? `${ps}%` : '—'}
+                    </div>
+                    <div className="card-bar">
+                      <div className="card-bar-fill" style={{ width: `${ps}%`, background: pillar.color }} />
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
           </div>
         </div>
       );
     }
 
-    // ─── App ──────────────────────────────────────────────────────────────────
+    // ── App Root ───────────────────────────────────────────────────────────────────────────────────
     function FourPillarsApp() {
       const [data, setData]   = useState(() => loadData());
       const [date, setDate]   = useState(todayStr());
-      const [tab, setTab]     = useState("dashboard");
-      const [darkMode, setDarkMode] = useState(true);
+      const [tab, setTab]     = useState('dashboard');
       const [saved, setSaved] = useState(false);
-      const [installPrompt, setInstallPrompt] = useState(null);
-      const [showInstall, setShowInstall] = useState(false);
 
-      useEffect(() => { saveData(data); }, [data]);
+      // The key fix: data state is already live from setData calls in PillarView.
+      // Graph re-renders automatically because TrendBars receives data as a prop.
+      // Save just persists to localStorage — no stale state issues.
+      function handleSave() {
+        saveData(data);
+        setSaved(true);
+        setTimeout(() => setSaved(false), 2000);
+      }
 
-      useEffect(() => {
-        const handler = e => { e.preventDefault(); setInstallPrompt(e); setShowInstall(true); };
-        window.addEventListener('beforeinstallprompt', handler);
-        // iOS detection: show hint if standalone not active
-        const isIos = /iphone|ipad|ipod/i.test(navigator.userAgent);
-        const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
-        if (isIos && !isStandalone) setShowInstall(true);
-        return () => window.removeEventListener('beforeinstallprompt', handler);
-      }, []);
-
-      // activePillar derived from tab
-      const activePillar = tab !== "dashboard" ? tab : null;
-
-      const days7      = useMemo(() => last7(date), [date]);
-      const dayData    = data[date] ?? null;
-      const isToday    = date === todayStr();
-      const totalScore = useMemo(() => overallScore(dayData), [dayData]);
-      const totalPct   = Math.round(totalScore * 100);
-
-      function updateMetric(pillarKey, metricKey, value) {
-        setData(prev => {
-          const existing = prev[date] ?? emptyDayMetrics();
-          return { ...prev, [date]: { ...existing, [pillarKey]: { ...existing[pillarKey], [metricKey]: value } } };
-        });
+      function goToTab(key) {
+        setTab(key);
         setSaved(false);
       }
 
-      function handleSave() { saveData(data); setSaved(true); setTimeout(()=>setSaved(false), 2000); }
-
-      function handleTabClick(key) {
-        setTab(key);
-      }
-
-      const NAV_TABS = [
-        { key: "dashboard", emoji: "📊", label: "Home" },
-        ...Object.entries(PILLARS).map(([k,v]) => ({ key: k, emoji: v.emoji, label: v.label })),
-      ];
-
-      const tabBtn = (active, color) => ({
-        display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center",
-        flex:1, padding:"6px 2px", minWidth:0, borderRadius:9, border:"none",
-        background: active ? (color ? color+"22" : "var(--bg-row)") : "transparent",
-        color: active ? (color || "var(--text)") : "var(--text-dim)",
-        cursor:"pointer", transition:"all 0.15s", gap:1,
-      });
+      const isPillar = tab !== 'dashboard';
 
       return (
-        <DarkCtx.Provider value={darkMode}>
-          <div className={darkMode ? "" : "light-mode"}
-               style={{ minHeight:"100vh", background:"var(--bg)", color:"var(--text)",
-                        fontFamily:"system-ui,-apple-system,sans-serif", paddingBottom:64 }}>
-
-            {/* Header */}
-            <div style={{ position:"sticky", top:0, zIndex:20, background:"var(--header-bg)",
-                          backdropFilter:"blur(12px)", borderBottom:"1px solid var(--border)", padding:"12px 16px",
-                          paddingTop:"max(12px, env(safe-area-inset-top))" }}>
-              <div style={{ maxWidth:520, margin:"0 auto" }}>
-
-                {/* Title + theme toggle */}
-                <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:10 }}>
-                  <div style={{ display:"flex", alignItems:"center", gap:9 }}>
-                    {/* App icon */}
-                    <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ borderRadius:9, flexShrink:0 }}>
-                      <defs>
-                        <linearGradient id="bg" x1="0" y1="0" x2="36" y2="36" gradientUnits="userSpaceOnUse">
-                          <stop offset="0%" stopColor="#1e1b4b"/>
-                          <stop offset="100%" stopColor="#0f172a"/>
-                        </linearGradient>
-                      </defs>
-                      <rect width="36" height="36" rx="9" fill="url(#bg)"/>
-                      <rect x="5" y="22" width="5" height="9" rx="1.5" fill="#ef4444"/>
-                      <rect x="12" y="16" width="5" height="15" rx="1.5" fill="#a78bfa"/>
-                      <rect x="19" y="19" width="5" height="12" rx="1.5" fill="#3b82f6"/>
-                      <rect x="26" y="12" width="5" height="19" rx="1.5" fill="#22c55e"/>
-                      <text x="18" y="11" fontFamily="Arial" fontWeight="800" fontSize="7" fill="white" textAnchor="middle" letterSpacing="0.5">AKASH</text>
-                    </svg>
-                    <div>
-                      <div style={{ color:"var(--text)", fontWeight:700, fontSize:17, letterSpacing:-0.3 }}>Akash Core</div>
-                      <div style={{ color:"var(--text-faint)", fontSize:10 }}>Command Center</div>
-                    </div>
-                  </div>
-                  <div style={{ display:"flex", alignItems:"center", gap:6 }}>
-                    {/* Install button */}
-                    {showInstall && (
-                      <button onClick={async () => {
-                        if (installPrompt) {
-                          installPrompt.prompt();
-                          const { outcome } = await installPrompt.userChoice;
-                          if (outcome === 'accepted') setShowInstall(false);
-                        } else {
-                          alert('To install: tap the Share button (iOS) or menu (Android) → "Add to Home Screen"');
-                        }
-                      }}
-                        style={{ background:"linear-gradient(135deg,#4f46e5,#7c3aed)", border:"none",
-                                 borderRadius:20, padding:"5px 10px", cursor:"pointer",
-                                 fontSize:11, color:"white", fontWeight:600, display:"flex", alignItems:"center", gap:4 }}>
-                        <span>⬇</span><span>Install</span>
-                      </button>
-                    )}
-                    {/* Dark/Light toggle */}
-                    <button onClick={() => setDarkMode(d=>!d)}
-                      style={{ background:"var(--bg-item)", border:"1px solid var(--border)",
-                               borderRadius:20, padding:"5px 10px", cursor:"pointer",
-                               fontSize:16, lineHeight:1, display:"flex", alignItems:"center", gap:5 }}>
-                      <span>{darkMode ? "☀️" : "🌙"}</span>
-                      <span style={{ fontSize:10, color:"var(--text-muted)", fontWeight:500 }}>
-                        {darkMode ? "Light" : "Dark"}
-                      </span>
-                    </button>
-                  </div>
-                </div>
-
-                {/* Today's date */}
-                <div style={{ display:"flex", alignItems:"center", justifyContent:"center",
-                              background:"var(--bg-item)", borderRadius:12, padding:"8px 14px", marginBottom:10 }}>
-                  <div style={{ textAlign:"center" }}>
-                    <div style={{ color:"var(--text)", fontWeight:600, fontSize:13 }}>{fmtDate(todayStr())}</div>
-                    <div style={{ fontSize:10, marginTop:1, color:"#22c55e" }}>● Today</div>
-                  </div>
-                </div>
-
-                {/* 5-tab nav */}
-                <div style={{ display:"flex", background:"var(--bg-item)", borderRadius:12, padding:4, gap:2 }}>
-                  {NAV_TABS.map(t => {
-                    const pillarCfg = t.key !== "dashboard" ? PILLARS[t.key] : null;
-                    const active = tab === t.key;
-                    return (
-                      <button key={t.key} style={tabBtn(active, pillarCfg?.color)}
-                        onClick={() => handleTabClick(t.key)}>
-                        <span style={{ fontSize:17, lineHeight:1 }}>{t.emoji}</span>
-                        <span style={{ fontSize:9, fontWeight: active ? 600 : 400, letterSpacing:0.1,
-                                       whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis",
-                                       maxWidth:52 }}>{t.label}</span>
-                      </button>
-                    );
-                  })}
-                </div>
-
+        <>
+          {/* Header — only dashboard */}
+          {!isPillar && (
+            <div className="header">
+              <div>
+                <div className="header-title">Akash Core ⚡</div>
+                <div className="header-sub">Command Center</div>
+              </div>
+              <div style={{ fontSize: 13, color: 'var(--text-muted)' }}>
+                {new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
               </div>
             </div>
+          )}
 
-            {/* Dashboard */}
-            {tab==="dashboard" && (
-              <div style={{ maxWidth:520, margin:"0 auto", padding:"16px 16px 0" }}>
-                <div style={{ background:"var(--bg-card)", border:"1px solid var(--border)",
-                              borderRadius:20, padding:20, marginBottom:16,
-                              display:"flex", alignItems:"center", gap:16 }}>
-                  <Ring pct={totalScore} color={scoreColor(totalPct)} size={80} stroke={8} glow={totalPct>=100}>
-                    <div style={{ textAlign:"center" }}>
-                      <div style={{ color:"var(--text)", fontWeight:700, fontSize:16, lineHeight:1 }}>{totalPct}</div>
-                      <div style={{ color:"var(--text-muted)", fontSize:9 }}>%</div>
-                    </div>
-                  </Ring>
-                  <div style={{ flex:1 }}>
-                    <div style={{ color:"var(--text-muted)", fontSize:11, marginBottom:2 }}>Meta Score</div>
-                    <div style={{ color:scoreColor(totalPct), fontWeight:700, fontSize:26, lineHeight:1,
-                                  textShadow: totalPct>=100 ? "0 0 10px #22c55e":"none" }}>{totalPct}%</div>
-                    <div style={{ color:"var(--text-dim)", fontSize:12, marginTop:4 }}>
-                      {totalPct>=80?"🔥 Locked in":totalPct>=55?"💪 Keep pushing":totalPct>0?"📈 Room to grow":"— Log today"}
-                    </div>
-                  </div>
-                  <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:6 }}>
-                    {Object.entries(PILLARS).map(([pk,pc]) => (
-                      <div key={pk} style={{ display:"flex", alignItems:"center", gap:4 }}>
-                        <div style={{ width:6, height:6, borderRadius:"50%", background:pc.color, flexShrink:0 }} />
-                        <span style={{ color:"var(--text-muted)", fontSize:11 }}>
-                          {Math.round(pillarScore(pk, dayData?.[pk])*100)}%
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:12, marginBottom:16 }}>
-                  {Object.keys(PILLARS).map(pk => (
-                    <PillarCard key={pk} pillarKey={pk}
-                      score={pillarScore(pk, dayData?.[pk])}
-                      trendValues={days7.map(d => pillarScore(pk, data[d]?.[pk]))}
-                      onTrack={(pk) => setTab(pk)} />
-                  ))}
-                </div>
-
-                <div style={{ background:"var(--bg-card)", border:"1px solid var(--border)", borderRadius:16, padding:16 }}>
-                  <div style={{ color:"var(--text-dim)", fontSize:11, fontWeight:600,
-                                textTransform:"uppercase", letterSpacing:0.5, marginBottom:12 }}>7-Day Meta Score</div>
-                  <div style={{ display:"flex", gap:3, alignItems:"flex-end" }}>
-                    {last7(todayStr()).map((d, i) => {
-                      const sc  = Math.round(overallScore(data[d])*100);
-                      const col = scoreColor(sc);
-                      const dn  = new Date(d+"T00:00:00").toLocaleDateString("en-US",{weekday:"narrow"});
-                      const isT = i === 6;
-                      const barH = sc > 0 ? Math.max(Math.round(sc * 0.55), 5) : 3;
-                      return (
-                        <div key={d} style={{ flex:1, display:"flex", flexDirection:"column", alignItems:"center", gap:2 }}>
-                          <span style={{ fontSize:9, fontWeight:700, lineHeight:1, minHeight:11,
-                                         color: col, display:"flex", alignItems:"flex-end" }}>
-                            {sc > 0 ? sc : ""}
-                          </span>
-                          <div style={{ width:"100%", height:barH, borderRadius:"2px 2px 0 0",
-                                        background: sc > 0 ? col + (isT ? "ff" : "77") : "var(--border)",
-                                        boxShadow: isT && sc > 0 ? `0 0 8px ${col}66` : "none",
-                                        transition:"height 0.4s ease" }} />
-                          <span style={{ fontSize:9, lineHeight:1, marginTop:2,
-                                         color: isT ? "#22c55e" : "var(--text-dim)",
-                                         fontWeight: isT ? 700 : 400 }}>
-                            {dn}
-                          </span>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Pillar Daily Log (shown when a pillar tab is selected) */}
-            {tab!=="dashboard" && (
-              <div style={{ maxWidth:520, margin:"0 auto", padding:"16px 16px 0" }}>
-                {/* Pillar header */}
-                <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:14 }}>
-                  <div>
-                    <div style={{ color:"var(--text)", fontWeight:700, fontSize:18 }}>
-                      {PILLARS[tab].emoji} {PILLARS[tab].label}
-                    </div>
-                    <div style={{ color:PILLARS[tab].color, fontSize:12, fontStyle:"italic", marginTop:2 }}>
-                      {PILLARS[tab].tagline}
-                    </div>
-                    <div style={{ color:"var(--text-dim)", fontSize:11, marginTop:2 }}>{fmtDate(date)}</div>
-                  </div>
-                  <button onClick={handleSave} style={{
-                    background: saved?"#22c55e22":"var(--bg-row)",
-                    border:`1px solid ${saved?"#22c55e":"var(--border-muted)"}`,
-                    color: saved?"#22c55e":"var(--text-muted)",
-                    borderRadius:10, padding:"6px 16px", fontSize:13, fontWeight:600, cursor:"pointer", transition:"all 0.2s",
-                  }}>{saved?"✓ Saved":"Save"}</button>
-                </div>
-
-                {/* Daily summary bar */}
-                <div style={{ background:"var(--bg-item)", border:"1px solid var(--border)",
-                              borderRadius:12, padding:"12px 14px", marginBottom:16 }}>
-                  <div style={{ display:"flex", justifyContent:"space-between", marginBottom:8 }}>
-                    <span style={{ color:"var(--text-muted)", fontSize:12 }}>Daily Completion</span>
-                    <span style={{ color:"var(--text)", fontWeight:700, fontSize:14 }}>{totalPct}%</span>
-                  </div>
-                  <div style={{ height:8, background:"var(--border)", borderRadius:4, overflow:"hidden" }}>
-                    <div style={{ height:"100%", width:`${totalPct}%`,
-                                  background:"linear-gradient(90deg,#ef4444,#a855f7,#3b82f6,#22c55e)",
-                                  borderRadius:4, transition:"width 0.5s ease" }} />
-                  </div>
-                  <div style={{ display:"flex", gap:12, marginTop:12, justifyContent:"center" }}>
-                    {Object.entries(PILLARS).map(([pk,pc]) => {
-                      const sc = Math.round(pillarScore(pk, data[date]?.[pk])*100);
-                      return (
-                        <button key={pk} onClick={() => setTab(pk)}
-                          style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:4,
-                                   background:"transparent", border:"none", cursor:"pointer",
-                                   opacity: tab===pk ? 1 : 0.6, transition:"opacity 0.2s" }}>
-                          <Ring pct={sc/100} color={scoreColor(sc)} size={40} stroke={4} glow={sc>=100}>
-                            <span style={{ fontSize:13 }}>{pc.emoji}</span>
-                          </Ring>
-                          <span style={{ fontSize:10, color:scoreColor(sc) }}>{sc}%</span>
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                {/* Show only the active pillar section */}
-                <PillarSection key={tab} pillarKey={tab}
-                  metrics={data[date]?.[tab] ?? null}
-                  onChange={updateMetric}
-                  isActive={true} />
-
-                {/* Quick Fill */}
-                <div style={{ background:"var(--bg-card)", border:"1px solid var(--border)",
-                              borderRadius:12, padding:"12px 14px", marginTop:4 }}>
-                  <div style={{ color:"var(--text-dim)", fontSize:11, fontWeight:600,
-                                textTransform:"uppercase", letterSpacing:0.5, marginBottom:10 }}>Quick Fill</div>
-                  <div style={{ display:"flex", gap:8 }}>
-                    <button onClick={() => setData(prev => ({ ...prev, [date]:perfectDayMetrics() }))}
-                      style={{ flex:1, background:"var(--bg-row)", border:"1px solid var(--border-muted)",
-                               color:"var(--text-muted)", borderRadius:8, padding:"7px 0", fontSize:12, cursor:"pointer" }}>✅ Perfect Day</button>
-                    <button onClick={() => setData(prev => ({ ...prev, [date]:emptyDayMetrics() }))}
-                      style={{ flex:1, background:"var(--bg-row)", border:"1px solid var(--border-muted)",
-                               color:"var(--text-muted)", borderRadius:8, padding:"7px 0", fontSize:12, cursor:"pointer" }}>🗑 Clear Day</button>
-                  </div>
-                </div>
-              </div>
+          {/* Main content */}
+          <div style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column', minHeight: 0 }}>
+            {isPillar ? (
+              <PillarView
+                key={`${tab}-${date}`}
+                pillarKey={tab}
+                data={data}
+                date={date}
+                setData={setData}
+                onBack={() => setTab('dashboard')}
+                onSave={handleSave}
+                saved={saved}
+              />
+            ) : (
+              <Dashboard
+                data={data}
+                date={date}
+                setDate={setDate}
+                onSelectPillar={goToTab}
+              />
             )}
           </div>
-        </DarkCtx.Provider>
+
+          {/* Bottom nav */}
+          <nav className="bottom-nav">
+            {[
+              { key: 'dashboard', emoji: '🏠', label: 'Home'  },
+              { key: 'warrior',   emoji: '⚔️', label: 'Body'  },
+              { key: 'mastery',   emoji: '🧠', label: 'Mind'  },
+              { key: 'influence', emoji: '🌍', label: 'Brand' },
+              { key: 'grounding', emoji: '🌿', label: 'Soul'  },
+            ].map(({ key, emoji, label }) => (
+              <button
+                key={key}
+                className={`nav-btn${tab === key ? ' active' : ''}`}
+                onClick={() => goToTab(key)}
+              >
+                <span className="nav-icon">{emoji}</span>
+                <span
+                  className="nav-label"
+                  style={{ color: tab === key ? (PILLARS[key]?.color ?? 'var(--text)') : undefined }}
+                >
+                  {label}
+                </span>
+              </button>
+            ))}
+          </nav>
+        </>
       );
     }
 
-    // Mount
-    const root = ReactDOM.createRoot(document.getElementById('root'));
-    root.render(<FourPillarsApp />);
-  </script>
-
-  <!-- Service Worker registration -->
-  <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js').catch(() => {});
-      });
-    }
+    window.PILLARS = PILLARS; // debug access
+    ReactDOM.createRoot(document.getElementById('root')).render(<FourPillarsApp />);
   </script>
 </body>
 </html>
