@@ -411,12 +411,46 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-database-compat.js"></script>
 
   <script type="text/babel">
-    const { useState, useCallback } = React;
+    const { useState, useCallback, useEffect } = React;
 
-    // ── Storage ────────────────────────────────────────────────────────────────────────────────────
+    // ── Storage ──────────────────────────────────────────────────────────────
     const STORAGE_KEY = "four_pillars_v4";
+
+    // ── Firebase Realtime Sync ────────────────────────────────────────────────
+    const FIREBASE_CONFIG = {
+      apiKey: "AIzaSyACCybk41cW0K272GhvfqgyhKf8x8ee5ys",
+      authDomain: "akash-core.firebaseapp.com",
+      databaseURL: "https://akash-core-default-rtdb.firebaseio.com",
+      projectId: "akash-core",
+      storageBucket: "akash-core.firebasestorage.app",
+      messagingSenderId: "94555846142",
+      appId: "1:94555846142:web:1f58da53f4ae7507443caf"
+    };
+    let fbRef = null;
+    try {
+      firebase.initializeApp(FIREBASE_CONFIG);
+      fbRef = firebase.database().ref('four_pillars');
+    } catch (e) {
+      console.warn('Firebase init error:', e);
+    }
+
+    // Deep merge: remote wins at the metric level
+    function mergeData(local, remote) {
+      if (!remote) return local;
+      const merged = { ...local };
+      for (const [date, dayData] of Object.entries(remote)) {
+        merged[date] = merged[date]
+          ? { ...merged[date], ...Object.fromEntries(
+              Object.entries(dayData).map(([p, pd]) => [p, { ...(merged[date][p] || {}), ...pd }])
+            )}
+          : dayData;
+      }
+      return merged;
+    }
 
     function loadData() {
       try {
@@ -430,7 +464,7 @@
       try { localStorage.setItem(STORAGE_KEY, JSON.stringify(d)); } catch (_) {}
     }
 
-    // ── Date Helpers ───────────────────────────────────────────────────────────────────────────────
+    // ── Date Helpers ─────────────────────────────────────────────────────────
     function todayStr() {
       return new Date().toISOString().slice(0, 10);
     }
@@ -459,7 +493,7 @@
       return new Date(dateStr + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'narrow' });
     }
 
-    // ── Pillars Config ─────────────────────────────────────────────────────────────────────────────
+    // ── Pillars Config ───────────────────────────────────────────────────────
     const PILLARS = {
       warrior: {
         label: "Warrior", emoji: "⚔️", color: "#ef4444",
@@ -646,7 +680,7 @@
       }
     };
 
-    // ── Scoring ────────────────────────────────────────────────────────────────────────────────────
+    // ── Scoring ──────────────────────────────────────────────────────────────
     function calcMetricScore(cfg, metricData) {
       if (metricData === undefined || metricData === null) return 0;
 
@@ -706,7 +740,7 @@
       return '#ef4444';
     }
 
-    // ── TrendBars — NO memo, always live ───────────────────────────────────────────────────────────
+    // ── TrendBars — NO memo, always live ─────────────────────────────────────
     function TrendBars({ data, activeDate }) {
       const days = last7Days();
       const today = todayStr();
@@ -740,7 +774,7 @@
       );
     }
 
-    // ── Score Ring SVG ─────────────────────────────────────────────────────────────────────────────
+    // ── Score Ring SVG ────────────────────────────────────────────────────────
     function ScoreRing({ score, color, size = 72 }) {
       const r = size / 2 - 6;
       const circ = 2 * Math.PI * r;
@@ -761,7 +795,7 @@
       );
     }
 
-    // ── Metric Inputs ──────────────────────────────────────────────────────────────────────────────
+    // ── Metric Inputs ─────────────────────────────────────────────────────────
     function ChecklistMetric({ cfg, value, color, onChange }) {
       const checked = value || {};
       let pts = 0;
@@ -910,7 +944,7 @@
       );
     }
 
-    // ── MetricCard ─────────────────────────────────────────────────────────────────────────────────
+    // ── MetricCard ────────────────────────────────────────────────────────────
     function MetricCard({ metricKey, cfg, pillarData, color, onUpdate }) {
       const value = pillarData?.[metricKey];
       const score = Math.round(calcMetricScore(cfg, value));
@@ -941,7 +975,7 @@
       );
     }
 
-    // ── PillarView ─────────────────────────────────────────────────────────────────────────────────
+    // ── PillarView ────────────────────────────────────────────────────────────
     function PillarView({ pillarKey, data, date, setData, onBack, onSave, saved }) {
       const pillar = PILLARS[pillarKey];
       const color  = pillar.color;
@@ -1005,7 +1039,7 @@
       );
     }
 
-    // ── Dashboard ──────────────────────────────────────────────────────────────────────────────────
+    // ── Dashboard ─────────────────────────────────────────────────────────────
     function Dashboard({ data, date, setDate, onSelectPillar }) {
       const dayData = data[date];
       const overall = Math.round(overallScore(dayData));
@@ -1087,18 +1121,40 @@
       );
     }
 
-    // ── App Root ───────────────────────────────────────────────────────────────────────────────────
+    // ── App Root ──────────────────────────────────────────────────────────────
     function FourPillarsApp() {
-      const [data, setData]   = useState(() => loadData());
-      const [date, setDate]   = useState(todayStr());
-      const [tab, setTab]     = useState('dashboard');
-      const [saved, setSaved] = useState(false);
+      const [data, setData]       = useState(() => loadData());
+      const [date, setDate]       = useState(todayStr());
+      const [tab, setTab]         = useState('dashboard');
+      const [saved, setSaved]     = useState(false);
+      const [syncStatus, setSyncStatus] = useState('pending'); // 'pending' | 'synced' | 'offline'
 
-      // The key fix: data state is already live from setData calls in PillarView.
-      // Graph re-renders automatically because TrendBars receives data as a prop.
-      // Save just persists to localStorage — no stale state issues.
+      // Firebase real-time listener — fires on connect and whenever another device saves
+      useEffect(() => {
+        if (!fbRef) { setSyncStatus('offline'); return; }
+        const handler = (snapshot) => {
+          const fbData = snapshot.val();
+          if (fbData === null) {
+            // Firebase empty — push local data up so other device can get it
+            const local = loadData();
+            if (Object.keys(local).length > 0) fbRef.set(local).catch(() => {});
+          } else {
+            setData(prev => {
+              const merged = mergeData(prev, fbData);
+              saveData(merged); // keep localStorage in sync
+              return merged;
+            });
+          }
+          setSyncStatus('synced');
+        };
+        fbRef.on('value', handler, () => setSyncStatus('offline'));
+        return () => fbRef.off('value', handler);
+      }, []);
+
+      // Save just persists to localStorage and Firebase.
       function handleSave() {
         saveData(data);
+        if (fbRef) fbRef.set(data).catch(() => {});
         setSaved(true);
         setTimeout(() => setSaved(false), 2000);
       }
@@ -1119,8 +1175,16 @@
                 <div className="header-title">Akash Core ⚡</div>
                 <div className="header-sub">Command Center</div>
               </div>
-              <div style={{ fontSize: 13, color: 'var(--text-muted)' }}>
-                {new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 2 }}>
+                <div style={{ fontSize: 13, color: 'var(--text-muted)' }}>
+                  {new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
+                </div>
+                <div style={{
+                  fontSize: 10, fontWeight: 600, letterSpacing: '0.3px',
+                  color: syncStatus === 'synced' ? '#22c55e' : syncStatus === 'offline' ? '#ef4444' : '#94a3b8'
+                }}>
+                  {syncStatus === 'synced' ? '● SYNCED' : syncStatus === 'offline' ? '● OFFLINE' : '● SYNCING'}
+                </div>
               </div>
             </div>
           )}
