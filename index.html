@@ -592,43 +592,47 @@
       },
 
       influence: {
-        label: "Influence", emoji: "🌍", color: "#3b82f6",
+        label: "Influence", emoji: "🌍", color: "#f97316",
         tagline: "10M people will know GM Akash",
         metrics: {
           create: {
-            label: "Create", weight: 60, type: "tiered_selector",
+            label: "Create", weight: 70, type: "multi_select",
             description: "Content created today",
             cap: 100,
-            groups: {
-              content: {
-                label: "Content Type",
-                tiers: [
-                  { key: "none",  label: "None",               score: 0   },
-                  { key: "draft", label: "Draft / Idea",        score: 30  },
-                  { key: "short", label: "Short post",          score: 60  },
-                  { key: "long",  label: "Long-form / Video",   score: 100 }
-                ]
-              }
-            }
+            options: [
+              { key: "research", label: "Research / Idea", score: 20 },
+              { key: "post",     label: "Post / Thread",   score: 20 },
+              { key: "reels",    label: "Reels",           score: 40 },
+              { key: "video",    label: "Long Video",      score: 50 }
+            ]
           },
           outreach: {
-            label: "Outreach", weight: 40, type: "tiered_selector",
-            description: "Community & network engagement",
+            label: "Outreach", weight: 30, type: "tiered_selector",
+            description: "Outreach time today",
             cap: 100,
             groups: {
-              engage: {
-                label: "Engagement",
+              time: {
+                label: "Time Spent",
                 tiers: [
-                  { key: "none",  label: "None",              score: 0   },
-                  { key: "light", label: "Comments / Replies", score: 50  },
-                  { key: "deep",  label: "DMs / Collabs",      score: 100 }
+                  { key: "none",  label: "None",   score: 0   },
+                  { key: "15min", label: "15 min", score: 50  },
+                  { key: "30min", label: "30 min", score: 100 }
+                ]
+              },
+              activity: {
+                label: "Activities",
+                multi: true,
+                options: [
+                  { key: "dms",      label: "Reply DMs" },
+                  { key: "comment",  label: "Comment"   },
+                  { key: "collab",   label: "Collab"    },
+                  { key: "stories",  label: "Stories"   }
                 ]
               }
             }
           }
         }
-      },
-
+      }
       grounding: {
         label: "Grounding", emoji: "🌿", color: "#22c55e",
         tagline: "Stay rooted to what matters",
@@ -698,17 +702,25 @@
         return 0;
       }
 
+      if (cfg.type === 'multi_select') {
+        if (typeof metricData !== 'object') return 0;
+        let pts = 0;
+        for (const opt of cfg.options) {
+          if (metricData[opt.key]) pts += opt.score;
+        }
+        return Math.min(pts, cfg.cap || 100);
+      }
       if (cfg.type === 'tiered_selector') {
         if (typeof metricData !== 'object') return 0;
         let maxScore = 0;
         for (const [gk, group] of Object.entries(cfg.groups)) {
+          if (group.multi) continue;
           const sel = metricData[gk] || 'none';
           const tier = group.tiers.find(t => t.key === sel);
           if (tier && tier.score > maxScore) maxScore = tier.score;
         }
         return Math.min(maxScore, cfg.cap || 100);
       }
-
       return 0;
     }
 
@@ -828,6 +840,36 @@
       );
     }
 
+    function MultiSelectMetric({ cfg, value, color, onChange }) {
+      const checked = value || {};
+      let pts = 0;
+      for (const opt of cfg.options) {
+        if (checked[opt.key]) pts += opt.score;
+      }
+      const score = Math.min(pts, cfg.cap || 100);
+      return (
+        <div>
+          <div className="checklist-items">
+            {cfg.options.map(opt => (
+              <div key={opt.key}
+                className={`check-item${checked[opt.key] ? ' checked' : ''}`}
+                style={{ color }}
+                onClick={() => onChange({ ...checked, [opt.key]: !checked[opt.key] })}
+              >
+                <div className="check-box">{checked[opt.key] ? '✓' : ''}</div>
+                <span className="check-label">{opt.label}</span>
+              </div>
+            ))}
+          </div>
+          <div className="checklist-progress">
+            <div className="progress-bar">
+              <div className="progress-fill" style={{ width: `${score}%`, background: color }} />
+            </div>
+            <span className="progress-label" style={{ color }}>{score}%</span>
+          </div>
+        </div>
+      );
+    }
     function TieredNumberMetric({ cfg, value, color, onChange }) {
       const strVal = (value !== undefined && value !== null) ? String(value) : '';
       const numVal = parseFloat(strVal);
@@ -897,14 +939,36 @@
 
     function TieredSelectorMetric({ cfg, value, color, onChange }) {
       const sels = value || {};
-
       function select(groupKey, key) {
         onChange({ ...sels, [groupKey]: sels[groupKey] === key ? 'none' : key });
       }
-
+      function toggleActivity(groupKey, key) {
+        const current = (typeof sels[groupKey] === 'object' && sels[groupKey] !== null) ? sels[groupKey] : {};
+        onChange({ ...sels, [groupKey]: { ...current, [key]: !current[key] } });
+      }
       return (
         <div className="tier-selector-groups">
           {Object.entries(cfg.groups).map(([gk, group]) => {
+            if (group.multi) {
+              const checked = (typeof sels[gk] === 'object' && sels[gk] !== null) ? sels[gk] : {};
+              return (
+                <div key={gk}>
+                  <div className="tier-group-label">{group.label}</div>
+                  <div className="checklist-items" style={{ marginTop: 6 }}>
+                    {group.options.map(opt => (
+                      <div key={opt.key}
+                        className={`check-item${checked[opt.key] ? ' checked' : ''}`}
+                        style={{ color }}
+                        onClick={() => toggleActivity(gk, opt.key)}
+                      >
+                        <div className="check-box">{checked[opt.key] ? '✓' : ''}</div>
+                        <span className="check-label">{opt.label}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              );
+            }
             const selected = sels[gk] || 'none';
             return (
               <div key={gk}>
@@ -913,8 +977,7 @@
                   {group.tiers.filter(t => t.key !== 'none').map((tier) => {
                     const isActive = selected === tier.key;
                     return (
-                      <div
-                        key={tier.key}
+                      <div key={tier.key}
                         className={`tier-pill${isActive ? ' active' : ''}`}
                         style={{ color: isActive ? color : undefined }}
                         onClick={() => select(gk, tier.key)}
@@ -924,13 +987,10 @@
                     );
                   })}
                   {selected !== 'none' && (
-                    <div
-                      className="tier-pill"
+                    <div className="tier-pill"
                       style={{ color: 'var(--text-muted)' }}
                       onClick={() => onChange({ ...sels, [gk]: 'none' })}
-                    >
-                      ✕
-                    </div>
+                    >✕</div>
                   )}
                 </div>
               </div>
@@ -939,8 +999,6 @@
         </div>
       );
     }
-
-    // ── MetricCard ────────────────────────────────────────────────────────────
     function MetricCard({ metricKey, cfg, pillarData, color, onUpdate }) {
       const value = pillarData?.[metricKey];
       const score = Math.round(calcMetricScore(cfg, value));
@@ -962,6 +1020,9 @@
           {cfg.type === 'tiered_number' && (
             <TieredNumberMetric cfg={cfg} value={value} color={color}
               onChange={v => onUpdate(metricKey, v)} />
+          )}
+          {cfg.type === 'multi_select' && (
+            <MultiSelectMetric cfg={cfg} value={value} color={color} onChange={v => onUpdate(metricKey, v)} />
           )}
           {cfg.type === 'tiered_selector' && (
             <TieredSelectorMetric cfg={cfg} value={value} color={color}
