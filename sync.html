@@ -4,12 +4,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#f8fafc" />
-  <title>Akash Core</title>
+  <title>Akash Core · Sync</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      background: #f8fafc;
+      background: #f1f5f9;
       color: #0f172a;
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       min-height: 100vh;
@@ -23,95 +23,85 @@
       background: #fff;
       border: 1px solid #e2e8f0;
       border-radius: 20px;
-      padding: 32px;
+      padding: 28px;
       width: 100%;
-      max-width: 400px;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+      max-width: 420px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
     }
 
     .top {
       display: flex;
       align-items: flex-start;
       justify-content: space-between;
-      margin-bottom: 24px;
+      margin-bottom: 20px;
     }
 
-    .title { font-size: 20px; font-weight: 700; letter-spacing: -0.3px; }
-    .subtitle { font-size: 13px; color: #64748b; margin-top: 3px; }
+    .title { font-size: 19px; font-weight: 700; letter-spacing: -0.3px; }
+    .subtitle { font-size: 12px; color: #94a3b8; margin-top: 2px; }
 
     .sync-badge {
-      font-size: 11px;
-      font-weight: 600;
-      letter-spacing: 0.3px;
-      padding: 4px 10px;
-      border-radius: 20px;
-      background: #f1f5f9;
-      color: #94a3b8;
-      white-space: nowrap;
+      font-size: 11px; font-weight: 600; letter-spacing: 0.3px;
+      padding: 4px 10px; border-radius: 20px;
+      background: #f1f5f9; color: #94a3b8; white-space: nowrap;
     }
     .sync-badge.synced { background: #dcfce7; color: #16a34a; }
     .sync-badge.offline { background: #fee2e2; color: #dc2626; }
 
     .date-label {
-      font-size: 12px;
-      font-weight: 600;
-      color: #94a3b8;
-      letter-spacing: 0.6px;
-      text-transform: uppercase;
-      margin-bottom: 12px;
+      font-size: 11px; font-weight: 700; color: #94a3b8;
+      letter-spacing: 0.8px; text-transform: uppercase; margin-bottom: 14px;
     }
 
-    .pillars {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-    }
+    .pillars { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 
     .pillar {
       background: #f8fafc;
       border: 1px solid #e2e8f0;
       border-radius: 14px;
       padding: 14px;
+      transition: border-color 0.2s;
     }
+    .pillar.has-data { background: #fff; }
 
-    .pillar-emoji { font-size: 20px; line-height: 1; margin-bottom: 8px; }
+    .pillar-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+    .pillar-emoji { font-size: 20px; line-height: 1; }
+    .pillar-pct {
+      font-size: 15px; font-weight: 800; letter-spacing: -0.5px;
+      color: #cbd5e1;
+    }
+    .pillar-pct.active { color: inherit; }
+
     .pillar-name {
-      font-size: 10px;
-      font-weight: 700;
-      color: #94a3b8;
-      letter-spacing: 0.5px;
-      text-transform: uppercase;
-      margin-bottom: 4px;
+      font-size: 10px; font-weight: 700; color: #94a3b8;
+      letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 6px;
     }
-    .pillar-score {
-      font-size: 26px;
-      font-weight: 800;
-      letter-spacing: -1px;
-      color: #0f172a;
-    }
-    .pillar-score.zero { color: #cbd5e1; }
 
-    .bar-wrap { height: 3px; background: #e2e8f0; border-radius: 2px; margin-top: 8px; }
-    .bar-fill { height: 100%; border-radius: 2px; transition: width 0.4s ease; }
+    .items { display: flex; flex-direction: column; gap: 3px; }
+    .item {
+      font-size: 11px; color: #94a3b8;
+      display: flex; align-items: center; gap: 5px;
+    }
+    .item.filled { color: #475569; }
+    .item-dot {
+      width: 5px; height: 5px; border-radius: 50%;
+      background: #e2e8f0; flex-shrink: 0;
+    }
+    .item.filled .item-dot { background: currentColor; }
+
+    .bar-wrap { height: 3px; background: #e2e8f0; border-radius: 2px; margin-top: 10px; }
+    .bar-fill { height: 100%; border-radius: 2px; transition: width 0.5s ease; }
 
     .overall {
-      margin-top: 16px;
-      padding: 14px;
-      background: #f8fafc;
-      border: 1px solid #e2e8f0;
+      margin-top: 12px; padding: 14px 16px;
+      background: #f8fafc; border: 1px solid #e2e8f0;
       border-radius: 14px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
+      display: flex; align-items: center; justify-content: space-between;
     }
     .overall-label { font-size: 13px; font-weight: 600; color: #475569; }
-    .overall-score { font-size: 22px; font-weight: 800; letter-spacing: -0.5px; }
+    .overall-score { font-size: 22px; font-weight: 800; letter-spacing: -0.5px; color: #0f172a; }
 
     .footer {
-      margin-top: 16px;
-      font-size: 11px;
-      color: #cbd5e1;
-      text-align: center;
+      margin-top: 14px; font-size: 11px; color: #cbd5e1; text-align: center;
     }
   </style>
 </head>
@@ -120,107 +110,70 @@
     <div class="top">
       <div>
         <div class="title">Akash Core ⚡</div>
-        <div class="subtitle">Sync Dashboard</div>
+        <div class="subtitle">Live Sync Dashboard</div>
       </div>
       <div class="sync-badge" id="syncBadge">● Connecting</div>
     </div>
 
     <div class="date-label" id="dateLabel">Today</div>
-
     <div class="pillars" id="pillars"></div>
-
     <div class="overall" id="overall" style="display:none">
-      <div class="overall-label">Overall</div>
+      <div class="overall-label">Overall completion</div>
       <div class="overall-score" id="overallScore">—</div>
     </div>
-
     <div class="footer" id="footer">Waiting for data…</div>
   </div>
 
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-database-compat.js"></script>
   <script>
+    // Pillar display config — only for labels/emojis/colors, NOT scoring
     const PILLARS = {
-      warrior:   { label: 'Warrior',   emoji: '⚔️',  color: '#ef4444',
-        metrics: {
-          training:   { type: 'tiered_number', tiers: [{key:'none',score:0},{key:'light',score:40},{key:'moderate',score:75},{key:'intense',score:100}], weight: 35 },
-          nutrition:  { type: 'weighted_checklist', items: { protein:{label:'Protein',w:30}, veggies:{label:'Veggies',w:20}, hydration:{label:'Hydration',w:20}, noJunk:{label:'No junk',w:30} }, weight: 30 },
-          sleep:      { type: 'tiered_number', tiers: [{key:'none',score:0},{key:'poor',score:20},{key:'ok',score:60},{key:'good',score:100}], weight: 25 },
-          recovery:   { type: 'weighted_checklist', items: { stretch:{label:'Stretch',w:50}, cold:{label:'Cold',w:50} }, weight: 10 }
-        }
-      },
-      mastery:   { label: 'Mastery',   emoji: '🧠',  color: '#8b5cf6',
-        metrics: {
-          deepWork:   { type: 'tiered_number', tiers: [{key:'none',score:0},{key:'one',score:40},{key:'two',score:75},{key:'three',score:100}], weight: 40 },
-          learning:   { type: 'weighted_checklist', items: { read:{label:'Read',w:50}, notes:{label:'Notes',w:50} }, weight: 20 },
-          shipping:   { type: 'tiered_selector', groups: { type: { label:'Type', tiers:[{key:'none',label:'None'},{key:'code',label:'Code'},{key:'design',label:'Design'},{key:'writing',label:'Writing'}] } }, weight: 40 }
-        }
-      },
-      influence: { label: 'Influence', emoji: '🌍',  color: '#f59e0b',
-        metrics: {
-          content:    { type: 'tiered_number', tiers: [{key:'none',score:0},{key:'ideated',score:30},{key:'drafted',score:65},{key:'posted',score:100}], weight: 50 },
-          network:    { type: 'weighted_checklist', items: { reached:{label:'Reached out',w:50}, responded:{label:'Responded',w:50} }, weight: 30 },
-          visibility: { type: 'weighted_checklist', items: { engaged:{label:'Engaged',w:100} }, weight: 20 }
-        }
-      },
-      grounding: { label: 'Grounding', emoji: '🌿',  color: '#10b981',
-        metrics: {
-          meditation: { type: 'tiered_number', tiers: [{key:'none',score:0},{key:'five',score:50},{key:'ten',score:75},{key:'twenty',score:100}], weight: 35 },
-          gratitude:  { type: 'weighted_checklist', items: { journal:{label:'Journal',w:60}, shared:{label:'Shared',w:40} }, weight: 25 },
-          nature:     { type: 'weighted_checklist', items: { outside:{label:'Outside',w:60}, sunlight:{label:'Sunlight',w:40} }, weight: 20 },
-          purpose:    { type: 'weighted_checklist', items: { reviewed:{label:'Reviewed goals',w:100} }, weight: 20 }
-        }
-      }
+      warrior:   { label: 'Warrior',   emoji: '⚔️',  color: '#ef4444' },
+      mastery:   { label: 'Mastery',   emoji: '🧠',  color: '#8b5cf6' },
+      influence: { label: 'Influence', emoji: '🌍',  color: '#f59e0b' },
+      grounding: { label: 'Grounding', emoji: '🌿',  color: '#10b981' }
     };
-
-    function calcMetricScore(cfg, val) {
-      if (!val) return 0;
-      if (cfg.type === 'tiered_number' || cfg.type === 'tiered_selector') {
-        // For tiered_number: val is a key string
-        // For tiered_selector: val is an object {groupKey: tierKey}
-        if (cfg.type === 'tiered_number') {
-          const tier = cfg.tiers.find(t => t.key === val);
-          return tier ? tier.score : 0;
-        } else {
-          if (!cfg.groups) return 0;
-          let total = 0, count = 0;
-          for (const [gk, group] of Object.entries(cfg.groups)) {
-            const sel = (val[gk] || 'none');
-            const tier = group.tiers.find(t => t.key === sel);
-            total += tier ? tier.score : 0;
-            count++;
-          }
-          return count ? total / count : 0;
-        }
-      }
-      if (cfg.type === 'weighted_checklist') {
-        let score = 0, totalW = 0;
-        for (const [k, item] of Object.entries(cfg.items)) {
-          if (val[k]) score += item.w;
-          totalW += item.w;
-        }
-        return totalW ? (score / totalW) * 100 : 0;
-      }
-      return 0;
-    }
-
-    function calcPillarScore(pillarCfg, pillarData) {
-      if (!pillarData) return 0;
-      let weighted = 0, totalW = 0;
-      for (const [k, cfg] of Object.entries(pillarCfg.metrics)) {
-        const s = calcMetricScore(cfg, pillarData[k]);
-        weighted += s * cfg.weight;
-        totalW += cfg.weight;
-      }
-      return totalW ? weighted / totalW : 0;
-    }
 
     function todayStr() {
       return new Date().toISOString().slice(0, 10);
     }
 
     function fmtDate(d) {
-      return new Date(d + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+      return new Date(d + 'T00:00:00').toLocaleDateString('en-US', {
+        weekday: 'short', month: 'short', day: 'numeric'
+      });
+    }
+
+    // Recursively count filled leaf values in a data object
+    function countFields(obj) {
+      if (!obj || typeof obj !== 'object') {
+        return { filled: (obj ? 1 : 0), total: 1 };
+      }
+      let filled = 0, total = 0;
+      for (const val of Object.values(obj)) {
+        const r = countFields(val);
+        filled += r.filled;
+        total += r.total;
+      }
+      return { filled, total };
+    }
+
+    // Get readable leaf items from a data object (max depth 2)
+    function getItems(obj, prefix) {
+      const items = [];
+      if (!obj || typeof obj !== 'object') return items;
+      for (const [k, v] of Object.entries(obj)) {
+        const label = k.replace(/_/g, ' ');
+        if (typeof v === 'object' && v !== null) {
+          for (const [k2, v2] of Object.entries(v)) {
+            items.push({ label: k2.replace(/_/g, ' '), filled: !!v2 });
+          }
+        } else {
+          items.push({ label, filled: !!v });
+        }
+      }
+      return items.slice(0, 5); // max 5 items shown per pillar
     }
 
     function render(data) {
@@ -232,35 +185,52 @@
       const pillarsEl = document.getElementById('pillars');
       pillarsEl.innerHTML = '';
 
-      let overallTotal = 0;
-      let pillarCount = 0;
+      let totalFilled = 0, totalFields = 0;
 
       for (const [key, pillar] of Object.entries(PILLARS)) {
-        const score = Math.round(calcPillarScore(pillar, dayData[key]));
-        overallTotal += score;
-        pillarCount++;
+        const pillarData = dayData[key];
+        const { filled, total } = pillarData ? countFields(pillarData) : { filled: 0, total: 0 };
+        const pct = total > 0 ? Math.round((filled / total) * 100) : 0;
+        totalFilled += filled;
+        totalFields += total;
+
+        const items = getItems(pillarData);
+        const hasData = filled > 0;
 
         const div = document.createElement('div');
-        div.className = 'pillar';
-        div.style.borderColor = score > 0 ? pillar.color + '40' : '';
+        div.className = 'pillar' + (hasData ? ' has-data' : '');
+        if (hasData) {
+          div.style.borderColor = pillar.color + '50';
+        }
+
+        const itemsHtml = items.length > 0
+          ? `<div class="items">${items.map(item =>
+              `<div class="item${item.filled ? ' filled' : ''}">
+                <div class="item-dot"></div>
+                <span>${item.label}</span>
+              </div>`).join('')}</div>`
+          : `<div style="font-size:11px;color:#cbd5e1">No data yet</div>`;
+
         div.innerHTML = `
-          <div class="pillar-emoji">${pillar.emoji}</div>
+          <div class="pillar-top">
+            <span class="pillar-emoji">${pillar.emoji}</span>
+            <span class="pillar-pct${hasData ? ' active' : ''}" style="color:${hasData ? pillar.color : ''}">${hasData ? pct + '%' : '—'}</span>
+          </div>
           <div class="pillar-name">${pillar.label}</div>
-          <div class="pillar-score${score === 0 ? ' zero' : ''}" style="color:${score > 0 ? pillar.color : ''}">${score > 0 ? score + '%' : '—'}</div>
-          <div class="bar-wrap"><div class="bar-fill" style="width:${score}%;background:${pillar.color}"></div></div>
+          ${itemsHtml}
+          <div class="bar-wrap"><div class="bar-fill" style="width:${pct}%;background:${pillar.color}"></div></div>
         `;
         pillarsEl.appendChild(div);
       }
 
-      const overall = Math.round(overallTotal / pillarCount);
+      const overallPct = totalFields > 0 ? Math.round((totalFilled / totalFields) * 100) : 0;
       document.getElementById('overall').style.display = 'flex';
-      document.getElementById('overallScore').textContent = overall > 0 ? overall + '%' : '—';
+      document.getElementById('overallScore').textContent = overallPct > 0 ? overallPct + '%' : '—';
 
       const now = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
       document.getElementById('footer').textContent = `Last synced · ${now}`;
     }
 
-    // Firebase setup
     const FIREBASE_CONFIG = {
       apiKey: "AIzaSyACCybk41cW0K272GhvfqgyhKf8x8ee5ys",
       authDomain: "akash-core.firebaseapp.com",
@@ -281,6 +251,9 @@
         badge.className = 'sync-badge synced';
         const fbData = snapshot.val();
         if (fbData) render(fbData);
+        else {
+          document.getElementById('footer').textContent = 'No data in Firebase yet';
+        }
       }, () => {
         const badge = document.getElementById('syncBadge');
         badge.textContent = '● OFFLINE';
