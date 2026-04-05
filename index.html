@@ -555,53 +555,37 @@
         metrics: {
           learn: {
             label: "Learn", weight: 40, type: "tiered_number",
-            description: "60 min daily target", unit: "min",
+            description: "Daily learning target", unit: "min",
             tiers: [
-              { label: "<15m", upTo: 15,   score: 0   },
-              { label: "15m",  upTo: 30,   score: 25  },
-              { label: "30m",  upTo: 45,   score: 50  },
-              { label: "45m",  upTo: 60,   score: 75  },
+              { label: "0",    upTo: 1,    score: 0   },
+              { label: "30m",  upTo: 60,   score: 50  },
               { label: "60m+", upTo: null, score: 100 }
             ]
           },
           teach: {
-            label: "Teach", weight: 40, type: "tiered_selector",
-            description: "Teaching sessions today",
+            label: "Teach", weight: 30, type: "tiered_selector",
+            description: "Teaching session today",
             cap: 100,
             groups: {
-              level_a: {
-                label: "Level A",
+              session: {
+                label: "Personal Session / Camp",
                 tiers: [
                   { key: "none",   label: "None",    score: 0   },
-                  { key: "30min",  label: "30 min",  score: 50  },
-                  { key: "60min",  label: "60 min",  score: 100 }
-                ]
-              },
-              level_b: {
-                label: "Level B",
-                tiers: [
-                  { key: "none",   label: "None",    score: 0   },
+                  { key: "30min",  label: "30 min",  score: 25  },
                   { key: "60min",  label: "60 min",  score: 50  },
+                  { key: "90min",  label: "90 min",  score: 75  },
                   { key: "120min", label: "120 min", score: 100 }
-                ]
-              },
-              camp: {
-                label: "Camp",
-                tiers: [
-                  { key: "none",   label: "None",    score: 0   },
-                  { key: "120min", label: "120min+", score: 100 }
                 ]
               }
             }
           },
-          read: {
-            label: "Read / Study", weight: 20, type: "tiered_number",
-            description: "Books, articles, analysis", unit: "min",
+          create: {
+            label: "Create", weight: 30, type: "tiered_number",
+            description: "Materials / Training Plan", unit: "min",
             tiers: [
               { label: "0",    upTo: 1,    score: 0   },
-              { label: "15m",  upTo: 20,   score: 40  },
-              { label: "30m",  upTo: 45,   score: 70  },
-              { label: "45m+", upTo: null, score: 100 }
+              { label: "30m",  upTo: 60,   score: 50  },
+              { label: "60m+", upTo: null, score: 100 }
             ]
           }
         }
