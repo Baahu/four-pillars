@@ -1,4 +1,9 @@
-<!DOCTYPE html>
+function offsetDate(base, delta) {
+      const [y,m,day] = base.split('-').map(Number);
+      const d = new Date(y, m-1, day);
+      d.setDate(d.getDate() + delta);
+      return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+    }<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -466,7 +471,8 @@
 
     // ── Date Helpers ─────────────────────────────────────────────────────────
     function todayStr() {
-      return new Date().toISOString().slice(0, 10);
+      const d = new Date();
+      return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
     }
 
     function last7Days() {
@@ -1047,9 +1053,10 @@
       const today   = todayStr();
 
       function changeDate(delta) {
-        const d = new Date(date + 'T00:00:00');
+        const [y,m,day] = date.split('-').map(Number);
+        const d = new Date(y, m-1, day);
         d.setDate(d.getDate() + delta);
-        const next = d.toISOString().slice(0, 10);
+        const next = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
         if (next <= today) setDate(next);
       }
 
