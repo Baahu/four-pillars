@@ -710,14 +710,6 @@
         }
         return Math.min(pts, cfg.cap || 100);
       }
-      if (cfg.type === 'multi_select') {
-        if (typeof metricData !== 'object') return 0;
-        let pts = 0;
-        for (const opt of cfg.options) {
-          if (metricData[opt.key]) pts += opt.score;
-        }
-        return Math.min(pts, cfg.cap || 100);
-      }
       if (cfg.type === 'tiered_selector') {
         if (typeof metricData !== 'object') return 0;
         let maxScore = 0;
@@ -848,36 +840,6 @@
       );
     }
 
-    function MultiSelectMetric({ cfg, value, color, onChange }) {
-      const checked = value || {};
-      let pts = 0;
-      for (const opt of cfg.options) {
-        if (checked[opt.key]) pts += opt.score;
-      }
-      const score = Math.min(pts, cfg.cap || 100);
-      return (
-        <div>
-          <div className="checklist-items">
-            {cfg.options.map(opt => (
-              <div key={opt.key}
-                className={`check-item${checked[opt.key] ? ' checked' : ''}`}
-                style={{ color }}
-                onClick={() => onChange({ ...checked, [opt.key]: !checked[opt.key] })}
-              >
-                <div className="check-box">{checked[opt.key] ? '✓' : ''}</div>
-                <span className="check-label">{opt.label}</span>
-              </div>
-            ))}
-          </div>
-          <div className="checklist-progress">
-            <div className="progress-bar">
-              <div className="progress-fill" style={{ width: `${score}%`, background: color }} />
-            </div>
-            <span className="progress-label" style={{ color }}>{score}%</span>
-          </div>
-        </div>
-      );
-    }
     function MultiSelectMetric({ cfg, value, color, onChange }) {
       const checked = value || {};
       let pts = 0;
@@ -1058,9 +1020,6 @@
           {cfg.type === 'tiered_number' && (
             <TieredNumberMetric cfg={cfg} value={value} color={color}
               onChange={v => onUpdate(metricKey, v)} />
-          )}
-          {cfg.type === 'multi_select' && (
-            <MultiSelectMetric cfg={cfg} value={value} color={color} onChange={v => onUpdate(metricKey, v)} />
           )}
           {cfg.type === 'multi_select' && (
             <MultiSelectMetric cfg={cfg} value={value} color={color} onChange={v => onUpdate(metricKey, v)} />
