@@ -2,425 +2,265 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#f8fafc" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="mobile-web-app-capable" content="yes" />
   <title>Akash Core</title>
-  <link rel="manifest" href="manifest.json" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    :root {
-      --bg: #f8fafc;
-      --surface: #ffffff;
-      --surface2: #f1f5f9;
-      --border: #e2e8f0;
-      --text: #0f172a;
-      --text-muted: #64748b;
-      --text-dim: #475569;
-      --radius: 14px;
-      --radius-sm: 8px;
-      --nav-h: 64px;
-    }
-
-    html {
-      -webkit-tap-highlight-color: transparent;
-      -webkit-text-size-adjust: 100%;
-      text-size-adjust: 100%;
-    }
-
     body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
-      overscroll-behavior: none;
-      touch-action: pan-y;
-      -webkit-font-smoothing: antialiased;
-      user-select: none;
-      -webkit-user-select: none;
-    }
-
-    #root {
-      height: 100dvh;
+      background: #f8fafc;
+      color: #0f172a;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      min-height: 100vh;
       display: flex;
-      flex-direction: column;
-      overflow: hidden;
-      padding-bottom: env(safe-area-inset-bottom, 0px);
-    }
-
-    .scroll-area {
-      flex: 1;
-      overflow-y: auto;
-      overflow-x: hidden;
-      -webkit-overflow-scrolling: touch;
-      overscroll-behavior-y: contain;
-    }
-
-    .page {
-      min-height: 100%;
-      padding: 0 0 24px;
-    }
-
-    /* Header */
-    .header {
-      position: sticky;
-      top: 0;
-      z-index: 10;
-      background: var(--bg);
-      border-bottom: 1px solid var(--border);
-      padding: 14px 16px 12px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding-top: max(14px, env(safe-area-inset-top, 14px));
-    }
-
-    .header-title { font-size: 18px; font-weight: 700; letter-spacing: -0.3px; }
-    .header-sub { font-size: 13px; color: var(--text-muted); margin-top: 1px; }
-
-    /* Bottom Nav */
-    .bottom-nav {
-      display: flex;
-      background: var(--surface);
-      border-top: 1px solid var(--border);
-      height: var(--nav-h);
-      flex-shrink: 0;
-    }
-
-    .nav-btn {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 3px;
-      border: none;
-      background: transparent;
-      cursor: pointer;
-      padding: 8px 4px;
-      -webkit-tap-highlight-color: transparent;
-      transition: opacity 0.15s;
-      min-height: 44px;
+      padding: 24px;
     }
 
-    .nav-btn:active { opacity: 0.6; }
-    .nav-icon { font-size: 20px; line-height: 1; transition: transform 0.2s; }
-    .nav-btn.active .nav-icon { transform: scale(1.15); }
-    .nav-label { font-size: 10px; font-weight: 600; color: var(--text-muted); letter-spacing: 0.3px; }
-    .nav-btn.active .nav-label { color: var(--text); }
+    .card {
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      border-radius: 20px;
+      padding: 32px;
+      width: 100%;
+      max-width: 400px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    }
 
-    /* Dashboard pillar grid */
-    .pillar-grid {
+    .top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 24px;
+    }
+
+    .title { font-size: 20px; font-weight: 700; letter-spacing: -0.3px; }
+    .subtitle { font-size: 13px; color: #64748b; margin-top: 3px; }
+
+    .sync-badge {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+      padding: 4px 10px;
+      border-radius: 20px;
+      background: #f1f5f9;
+      color: #94a3b8;
+      white-space: nowrap;
+    }
+    .sync-badge.synced { background: #dcfce7; color: #16a34a; }
+    .sync-badge.offline { background: #fee2e2; color: #dc2626; }
+
+    .date-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: #94a3b8;
+      letter-spacing: 0.6px;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    .pillars {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 10px;
-      padding: 14px 16px;
     }
 
-    .pillar-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
+    .pillar {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 14px;
       padding: 14px;
-      cursor: pointer;
-      -webkit-tap-highlight-color: transparent;
-      transition: transform 0.15s, opacity 0.15s;
-      text-align: left;
-      min-height: 100px;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
     }
 
-    .pillar-card:active { transform: scale(0.97); opacity: 0.85; }
-    .card-emoji { font-size: 22px; line-height: 1; }
-    .card-label { font-size: 11px; color: var(--text-muted); font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; }
-    .card-score { font-size: 28px; font-weight: 800; letter-spacing: -1px; margin-top: auto; }
-    .card-bar { height: 3px; border-radius: 2px; background: var(--border); margin-top: 2px; }
-    .card-bar-fill { height: 100%; border-radius: 2px; transition: width 0.4s ease; }
-
-    /* Trend chart */
-    .trend-section { padding: 0 16px 12px; }
-    .section-title {
-      font-size: 11px; font-weight: 700; color: var(--text-muted);
-      letter-spacing: 0.8px; text-transform: uppercase; margin-bottom: 10px;
+    .pillar-emoji { font-size: 20px; line-height: 1; margin-bottom: 8px; }
+    .pillar-name {
+      font-size: 10px;
+      font-weight: 700;
+      color: #94a3b8;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      margin-bottom: 4px;
     }
-
-    .trend-chart {
-      display: flex;
-      align-items: flex-end;
-      gap: 6px;
-      height: 80px;
-      padding: 0 2px;
+    .pillar-score {
+      font-size: 26px;
+      font-weight: 800;
+      letter-spacing: -1px;
+      color: #0f172a;
     }
+    .pillar-score.zero { color: #cbd5e1; }
 
-    .trend-col {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-end;
-      gap: 4px;
-      height: 100%;
-    }
+    .bar-wrap { height: 3px; background: #e2e8f0; border-radius: 2px; margin-top: 8px; }
+    .bar-fill { height: 100%; border-radius: 2px; transition: width 0.4s ease; }
 
-    .trend-bar-wrap { flex: 1; width: 100%; display: flex; align-items: flex-end; }
-
-    .trend-bar {
-      width: 100%;
-      min-height: 2px;
-      border-radius: 3px 3px 0 0;
-      transition: height 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    .trend-day { font-size: 10px; font-weight: 600; color: var(--text-muted); line-height: 1; }
-    .trend-day.today { color: var(--text); }
-
-    /* Overall score section */
-    .overall-section {
-      padding: 16px 16px 8px;
-      display: flex;
-      align-items: center;
-      gap: 16px;
-    }
-
-    .score-ring { position: relative; flex-shrink: 0; }
-    .score-ring svg { transform: rotate(-90deg); display: block; }
-
-    .score-ring-text {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .score-big { font-size: 20px; font-weight: 800; letter-spacing: -1px; line-height: 1; }
-    .score-pct { font-size: 10px; color: var(--text-muted); font-weight: 600; }
-    .overall-info { flex: 1; }
-    .overall-label { font-size: 16px; font-weight: 700; letter-spacing: -0.3px; }
-    .overall-sub { font-size: 13px; color: var(--text-muted); margin-top: 2px; }
-
-    /* Date row */
-    .date-row {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 8px 16px 12px;
-    }
-
-    .date-btn {
-      width: 36px; height: 36px;
-      display: flex; align-items: center; justify-content: center;
-      border: 1px solid var(--border);
-      border-radius: 50%;
-      background: var(--surface);
-      color: var(--text);
-      font-size: 18px;
-      cursor: pointer;
-      flex-shrink: 0;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    .date-btn:active { opacity: 0.6; }
-
-    .date-display {
-      flex: 1;
-      font-size: 14px;
-      font-weight: 600;
-      text-align: center;
-      color: var(--text-dim);
-    }
-
-    /* Pillar detail */
-    .pillar-header {
-      padding: 12px 16px 14px;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .back-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 14px;
-      color: var(--text-muted);
-      background: none;
-      border: none;
-      cursor: pointer;
-      padding: 4px 0;
-      margin-bottom: 8px;
-      -webkit-tap-highlight-color: transparent;
-      min-height: 36px;
-    }
-
-    .pillar-header-main { display: flex; align-items: center; gap: 10px; }
-    .pillar-header-emoji { font-size: 28px; }
-    .pillar-header-score { margin-left: auto; font-size: 32px; font-weight: 800; letter-spacing: -1.5px; }
-
-    /* Metric cards */
-    .metrics-list { display: flex; flex-direction: column; gap: 12px; padding: 16px; }
-
-    .metric-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
+    .overall {
+      margin-top: 16px;
       padding: 14px;
-      transition: border-color 0.2s;
-    }
-
-    .metric-header {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 14px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 10px;
     }
+    .overall-label { font-size: 13px; font-weight: 600; color: #475569; }
+    .overall-score { font-size: 22px; font-weight: 800; letter-spacing: -0.5px; }
 
-    .metric-name { font-size: 14px; font-weight: 700; }
-
-    .metric-score-badge {
-      font-size: 13px; font-weight: 700;
-      padding: 3px 10px;
-      border-radius: 20px;
-      background: var(--surface2);
-    }
-
-    .metric-desc { font-size: 12px; color: var(--text-muted); margin-bottom: 12px; }
-
-    /* Checklist */
-    .checklist-items { display: flex; flex-direction: column; gap: 8px; }
-
-    .check-item {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 10px 12px;
-      background: var(--surface2);
-      border-radius: var(--radius-sm);
-      border: 1px solid var(--border);
-      cursor: pointer;
-      min-height: 44px;
-      transition: background 0.15s, border-color 0.15s;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    .check-item.checked { border-color: currentColor; background: color-mix(in srgb, currentColor 12%, var(--surface2)); }
-    .check-item:active { opacity: 0.7; }
-
-    .check-box {
-      width: 22px; height: 22px;
-      border-radius: 6px;
-      border: 2px solid var(--border);
-      display: flex; align-items: center; justify-content: center;
-      flex-shrink: 0;
-      transition: all 0.15s;
-      font-size: 13px;
-      font-weight: 700;
-    }
-
-    .check-item.checked .check-box { background: currentColor; border-color: currentColor; color: #000; }
-    .check-label { font-size: 14px; flex: 1; }
-    .check-pts { font-size: 12px; color: var(--text-muted); white-space: nowrap; }
-
-    .checklist-progress { margin-top: 10px; display: flex; align-items: center; gap: 8px; }
-    .progress-bar { flex: 1; height: 4px; background: var(--border); border-radius: 2px; }
-    .progress-fill { height: 100%; border-radius: 2px; transition: width 0.3s ease; }
-    .progress-label { font-size: 12px; color: var(--text-muted); font-weight: 600; white-space: nowrap; }
-
-    /* Tiered number */
-    .tier-number-wrap { display: flex; flex-direction: column; gap: 10px; }
-
-    .tier-number-input { display: flex; align-items: center; gap: 10px; }
-
-    .num-input {
-      width: 80px;
-      padding: 10px 12px;
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      color: var(--text);
-      font-size: 18px;
-      font-weight: 700;
+    .footer {
+      margin-top: 16px;
+      font-size: 11px;
+      color: #cbd5e1;
       text-align: center;
-      -webkit-appearance: none;
-      outline: none;
-      transition: border-color 0.15s;
     }
-
-    .num-input:focus { border-color: var(--text-muted); }
-    .num-unit { font-size: 14px; color: var(--text-muted); }
-
-    .tier-pills { display: flex; flex-wrap: wrap; gap: 6px; }
-
-    .tier-pill {
-      padding: 6px 14px;
-      border-radius: 20px;
-      font-size: 12px;
-      font-weight: 600;
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      cursor: pointer;
-      transition: all 0.15s;
-      min-height: 36px;
-      display: flex;
-      align-items: center;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    .tier-pill.active { border-color: currentColor; background: color-mix(in srgb, currentColor 20%, var(--surface2)); }
-    .tier-pill:active { opacity: 0.7; }
-
-    /* Tiered selector groups */
-    .tier-selector-groups { display: flex; flex-direction: column; gap: 14px; }
-    .tier-group-label { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
-    .tier-group-pills { display: flex; flex-wrap: wrap; gap: 6px; }
-
-    /* Save bar */
-    .save-row {
-      padding: 12px 16px;
-      background: var(--bg);
-      border-top: 1px solid var(--border);
-      flex-shrink: 0;
-    }
-
-    .save-btn {
-      width: 100%;
-      padding: 15px;
-      border-radius: var(--radius);
-      border: none;
-      font-size: 16px;
-      font-weight: 700;
-      cursor: pointer;
-      min-height: 52px;
-      transition: transform 0.1s, background 0.3s;
-      letter-spacing: 0.2px;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    .save-btn:active { transform: scale(0.98); }
-
-    /* Divider */
-    .divider { height: 1px; background: var(--border); margin: 4px 16px 0; }
   </style>
 </head>
 <body>
-  <div id="root"></div>
+  <div class="card">
+    <div class="top">
+      <div>
+        <div class="title">Akash Core ⚡</div>
+        <div class="subtitle">Sync Dashboard</div>
+      </div>
+      <div class="sync-badge" id="syncBadge">● Connecting</div>
+    </div>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
+    <div class="date-label" id="dateLabel">Today</div>
+
+    <div class="pillars" id="pillars"></div>
+
+    <div class="overall" id="overall" style="display:none">
+      <div class="overall-label">Overall</div>
+      <div class="overall-score" id="overallScore">—</div>
+    </div>
+
+    <div class="footer" id="footer">Waiting for data…</div>
+  </div>
+
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-database-compat.js"></script>
+  <script>
+    const PILLARS = {
+      warrior:   { label: 'Warrior',   emoji: '⚔️',  color: '#ef4444',
+        metrics: {
+          training:   { type: 'tiered_number', tiers: [{key:'none',score:0},{key:'light',score:40},{key:'moderate',score:75},{key:'intense',score:100}], weight: 35 },
+          nutrition:  { type: 'weighted_checklist', items: { protein:{label:'Protein',w:30}, veggies:{label:'Veggies',w:20}, hydration:{label:'Hydration',w:20}, noJunk:{label:'No junk',w:30} }, weight: 30 },
+          sleep:      { type: 'tiered_number', tiers: [{key:'none',score:0},{key:'poor',score:20},{key:'ok',score:60},{key:'good',score:100}], weight: 25 },
+          recovery:   { type: 'weighted_checklist', items: { stretch:{label:'Stretch',w:50}, cold:{label:'Cold',w:50} }, weight: 10 }
+        }
+      },
+      mastery:   { label: 'Mastery',   emoji: '🧠',  color: '#8b5cf6',
+        metrics: {
+          deepWork:   { type: 'tiered_number', tiers: [{key:'none',score:0},{key:'one',score:40},{key:'two',score:75},{key:'three',score:100}], weight: 40 },
+          learning:   { type: 'weighted_checklist', items: { read:{label:'Read',w:50}, notes:{label:'Notes',w:50} }, weight: 20 },
+          shipping:   { type: 'tiered_selector', groups: { type: { label:'Type', tiers:[{key:'none',label:'None'},{key:'code',label:'Code'},{key:'design',label:'Design'},{key:'writing',label:'Writing'}] } }, weight: 40 }
+        }
+      },
+      influence: { label: 'Influence', emoji: '🌍',  color: '#f59e0b',
+        metrics: {
+          content:    { type: 'tiered_number', tiers: [{key:'none',score:0},{key:'ideated',score:30},{key:'drafted',score:65},{key:'posted',score:100}], weight: 50 },
+          network:    { type: 'weighted_checklist', items: { reached:{label:'Reached out',w:50}, responded:{label:'Responded',w:50} }, weight: 30 },
+          visibility: { type: 'weighted_checklist', items: { engaged:{label:'Engaged',w:100} }, weight: 20 }
+        }
+      },
+      grounding: { label: 'Grounding', emoji: '🌿',  color: '#10b981',
+        metrics: {
+          meditation: { type: 'tiered_number', tiers: [{key:'none',score:0},{key:'five',score:50},{key:'ten',score:75},{key:'twenty',score:100}], weight: 35 },
+          gratitude:  { type: 'weighted_checklist', items: { journal:{label:'Journal',w:60}, shared:{label:'Shared',w:40} }, weight: 25 },
+          nature:     { type: 'weighted_checklist', items: { outside:{label:'Outside',w:60}, sunlight:{label:'Sunlight',w:40} }, weight: 20 },
+          purpose:    { type: 'weighted_checklist', items: { reviewed:{label:'Reviewed goals',w:100} }, weight: 20 }
+        }
+      }
+    };
 
-  <script type="text/babel">
-    const { useState, useCallback, useEffect } = React;
+    function calcMetricScore(cfg, val) {
+      if (!val) return 0;
+      if (cfg.type === 'tiered_number' || cfg.type === 'tiered_selector') {
+        // For tiered_number: val is a key string
+        // For tiered_selector: val is an object {groupKey: tierKey}
+        if (cfg.type === 'tiered_number') {
+          const tier = cfg.tiers.find(t => t.key === val);
+          return tier ? tier.score : 0;
+        } else {
+          if (!cfg.groups) return 0;
+          let total = 0, count = 0;
+          for (const [gk, group] of Object.entries(cfg.groups)) {
+            const sel = (val[gk] || 'none');
+            const tier = group.tiers.find(t => t.key === sel);
+            total += tier ? tier.score : 0;
+            count++;
+          }
+          return count ? total / count : 0;
+        }
+      }
+      if (cfg.type === 'weighted_checklist') {
+        let score = 0, totalW = 0;
+        for (const [k, item] of Object.entries(cfg.items)) {
+          if (val[k]) score += item.w;
+          totalW += item.w;
+        }
+        return totalW ? (score / totalW) * 100 : 0;
+      }
+      return 0;
+    }
 
-    // ── Storage ──────────────────────────────────────────────────────────────
-    const STORAGE_KEY = "four_pillars_v4";
+    function calcPillarScore(pillarCfg, pillarData) {
+      if (!pillarData) return 0;
+      let weighted = 0, totalW = 0;
+      for (const [k, cfg] of Object.entries(pillarCfg.metrics)) {
+        const s = calcMetricScore(cfg, pillarData[k]);
+        weighted += s * cfg.weight;
+        totalW += cfg.weight;
+      }
+      return totalW ? weighted / totalW : 0;
+    }
 
-    // ── Firebase Realtime Sync ────────────────────────────────────────────────
+    function todayStr() {
+      return new Date().toISOString().slice(0, 10);
+    }
+
+    function fmtDate(d) {
+      return new Date(d + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+    }
+
+    function render(data) {
+      const today = todayStr();
+      const dayData = data?.[today] || {};
+
+      document.getElementById('dateLabel').textContent = fmtDate(today);
+
+      const pillarsEl = document.getElementById('pillars');
+      pillarsEl.innerHTML = '';
+
+      let overallTotal = 0;
+      let pillarCount = 0;
+
+      for (const [key, pillar] of Object.entries(PILLARS)) {
+        const score = Math.round(calcPillarScore(pillar, dayData[key]));
+        overallTotal += score;
+        pillarCount++;
+
+        const div = document.createElement('div');
+        div.className = 'pillar';
+        div.style.borderColor = score > 0 ? pillar.color + '40' : '';
+        div.innerHTML = `
+          <div class="pillar-emoji">${pillar.emoji}</div>
+          <div class="pillar-name">${pillar.label}</div>
+          <div class="pillar-score${score === 0 ? ' zero' : ''}" style="color:${score > 0 ? pillar.color : ''}">${score > 0 ? score + '%' : '—'}</div>
+          <div class="bar-wrap"><div class="bar-fill" style="width:${score}%;background:${pillar.color}"></div></div>
+        `;
+        pillarsEl.appendChild(div);
+      }
+
+      const overall = Math.round(overallTotal / pillarCount);
+      document.getElementById('overall').style.display = 'flex';
+      document.getElementById('overallScore').textContent = overall > 0 ? overall + '%' : '—';
+
+      const now = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+      document.getElementById('footer').textContent = `Last synced · ${now}`;
+    }
+
+    // Firebase setup
     const FIREBASE_CONFIG = {
       apiKey: "AIzaSyACCybk41cW0K272GhvfqgyhKf8x8ee5ys",
       authDomain: "akash-core.firebaseapp.com",
@@ -430,818 +270,26 @@
       messagingSenderId: "94555846142",
       appId: "1:94555846142:web:1f58da53f4ae7507443caf"
     };
-    let fbRef = null;
+
     try {
       firebase.initializeApp(FIREBASE_CONFIG);
-      fbRef = firebase.database().ref('four_pillars');
-    } catch (e) {
-      console.warn('Firebase init error:', e);
+      const fbRef = firebase.database().ref('four_pillars');
+
+      fbRef.on('value', (snapshot) => {
+        const badge = document.getElementById('syncBadge');
+        badge.textContent = '● SYNCED';
+        badge.className = 'sync-badge synced';
+        const fbData = snapshot.val();
+        if (fbData) render(fbData);
+      }, () => {
+        const badge = document.getElementById('syncBadge');
+        badge.textContent = '● OFFLINE';
+        badge.className = 'sync-badge offline';
+      });
+    } catch(e) {
+      document.getElementById('syncBadge').textContent = '● ERROR';
+      document.getElementById('syncBadge').className = 'sync-badge offline';
     }
-
-    // Deep merge: remote wins at the metric level
-    function mergeData(local, remote) {
-      if (!remote) return local;
-      const merged = { ...local };
-      for (const [date, dayData] of Object.entries(remote)) {
-        merged[date] = merged[date]
-          ? { ...merged[date], ...Object.fromEntries(
-              Object.entries(dayData).map(([p, pd]) => [p, { ...(merged[date][p] || {}), ...pd }])
-            )}
-          : dayData;
-      }
-      return merged;
-    }
-
-    function loadData() {
-      try {
-        const raw = localStorage.getItem(STORAGE_KEY);
-        if (raw) return JSON.parse(raw);
-      } catch (_) {}
-      return {};
-    }
-
-    function saveData(d) {
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(d)); } catch (_) {}
-    }
-
-    // ── Date Helpers ─────────────────────────────────────────────────────────
-    function todayStr() {
-      return new Date().toISOString().slice(0, 10);
-    }
-
-    function last7Days() {
-      const days = [];
-      for (let i = 6; i >= 0; i--) {
-        const d = new Date();
-        d.setDate(d.getDate() - i);
-        days.push(d.toISOString().slice(0, 10));
-      }
-      return days;
-    }
-
-    function fmtDate(dateStr) {
-      const d = new Date(dateStr + 'T00:00:00');
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      const diff = Math.round((d - today) / 86400000);
-      if (diff === 0) return 'Today';
-      if (diff === -1) return 'Yesterday';
-      return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-    }
-
-    function dayLetter(dateStr) {
-      return new Date(dateStr + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'narrow' });
-    }
-
-    // ── Pillars Config ───────────────────────────────────────────────────────
-    const PILLARS = {
-      warrior: {
-        label: "Warrior", emoji: "⚔️", color: "#ef4444",
-        tagline: "Forge your body, own your day",
-        metrics: {
-          exercise: {
-            label: "Exercise", weight: 50, type: "weighted_checklist",
-            description: "1hr+ training",
-            cap: 100, displayUnit: "pts",
-            items: {
-              morning_stretch:  { label: "Morning Stretch",    points: 15 },
-              strength_training:{ label: "Strength Training",  points: 70 },
-              cardio:           { label: "Cardio",             points: 70 },
-              sports:           { label: "Sports",             points: 70 },
-              ankle_stretch:    { label: "Ankle Stretch",      points: 15 }
-            }
-          },
-          sleep: {
-            label: "Sleep", weight: 30, type: "tiered_number",
-            description: "7+ hours target", unit: "hrs",
-            tiers: [
-              { label: "<4h",  upTo: 4,    score: 0   },
-              { label: "4–6h", upTo: 6,    score: 50  },
-              { label: "6–7h", upTo: 7,    score: 80  },
-              { label: "7–8h", upTo: 8,    score: 90  },
-              { label: "8h+",  upTo: null, score: 100 }
-            ]
-          },
-          protein: {
-            label: "Protein", weight: 20, type: "weighted_checklist",
-            description: "80g daily target",
-            cap: 80, displayUnit: "g",
-            items: {
-              eggs:         { label: "Eggs",           points: 30 },
-              chicken_fish: { label: "Chicken / Fish", points: 40 },
-              protein_shake:{ label: "Protein Shake",  points: 40 },
-              mutton:       { label: "Mutton",         points: 30 },
-              nuts:         { label: "Nuts",           points: 10 }
-            }
-          }
-        }
-      },
-
-      mastery: {
-        label: "Mastery", emoji: "🧠", color: "#a855f7",
-        tagline: "Teach. Learn. Repeat.",
-        metrics: {
-          learn: {
-            label: "Learn", weight: 40, type: "tiered_number",
-            description: "60 min daily target", unit: "min",
-            tiers: [
-              { label: "<15m", upTo: 15,   score: 0   },
-              { label: "15m",  upTo: 30,   score: 25  },
-              { label: "30m",  upTo: 45,   score: 50  },
-              { label: "45m",  upTo: 60,   score: 75  },
-              { label: "60m+", upTo: null, score: 100 }
-            ]
-          },
-          teach: {
-            label: "Teach", weight: 40, type: "tiered_selector",
-            description: "Teaching sessions today",
-            cap: 100,
-            groups: {
-              level_a: {
-                label: "Level A",
-                tiers: [
-                  { key: "none",   label: "None",    score: 0   },
-                  { key: "30min",  label: "30 min",  score: 50  },
-                  { key: "60min",  label: "60 min",  score: 100 }
-                ]
-              },
-              level_b: {
-                label: "Level B",
-                tiers: [
-                  { key: "none",   label: "None",    score: 0   },
-                  { key: "60min",  label: "60 min",  score: 50  },
-                  { key: "120min", label: "120 min", score: 100 }
-                ]
-              },
-              camp: {
-                label: "Camp",
-                tiers: [
-                  { key: "none",   label: "None",    score: 0   },
-                  { key: "120min", label: "120min+", score: 100 }
-                ]
-              }
-            }
-          },
-          read: {
-            label: "Read / Study", weight: 20, type: "tiered_number",
-            description: "Books, articles, analysis", unit: "min",
-            tiers: [
-              { label: "0",    upTo: 1,    score: 0   },
-              { label: "15m",  upTo: 20,   score: 40  },
-              { label: "30m",  upTo: 45,   score: 70  },
-              { label: "45m+", upTo: null, score: 100 }
-            ]
-          }
-        }
-      },
-
-      influence: {
-        label: "Influence", emoji: "🌍", color: "#3b82f6",
-        tagline: "10M people will know GM Akash",
-        metrics: {
-          create: {
-            label: "Create", weight: 60, type: "tiered_selector",
-            description: "Content created today",
-            cap: 100,
-            groups: {
-              content: {
-                label: "Content Type",
-                tiers: [
-                  { key: "none",  label: "None",               score: 0   },
-                  { key: "draft", label: "Draft / Idea",        score: 30  },
-                  { key: "short", label: "Short post",          score: 60  },
-                  { key: "long",  label: "Long-form / Video",   score: 100 }
-                ]
-              }
-            }
-          },
-          outreach: {
-            label: "Outreach", weight: 40, type: "tiered_selector",
-            description: "Community & network engagement",
-            cap: 100,
-            groups: {
-              engage: {
-                label: "Engagement",
-                tiers: [
-                  { key: "none",  label: "None",              score: 0   },
-                  { key: "light", label: "Comments / Replies", score: 50  },
-                  { key: "deep",  label: "DMs / Collabs",      score: 100 }
-                ]
-              }
-            }
-          }
-        }
-      },
-
-      grounding: {
-        label: "Grounding", emoji: "🌿", color: "#22c55e",
-        tagline: "Stay rooted to what matters",
-        metrics: {
-          family: {
-            label: "Family", weight: 35, type: "tiered_number",
-            description: "Quality time with family", unit: "min",
-            tiers: [
-              { label: "0",   upTo: 1,    score: 0   },
-              { label: "15m", upTo: 30,   score: 40  },
-              { label: "30m", upTo: 60,   score: 70  },
-              { label: "1h+", upTo: null, score: 100 }
-            ]
-          },
-          self: {
-            label: "Self", weight: 20, type: "tiered_number",
-            description: "Journaling / reflection / self-care", unit: "min",
-            tiers: [
-              { label: "0",    upTo: 1,    score: 0   },
-              { label: "10m",  upTo: 15,   score: 50  },
-              { label: "20m",  upTo: 30,   score: 80  },
-              { label: "30m+", upTo: null, score: 100 }
-            ]
-          },
-          friends: {
-            label: "Friends", weight: 0, type: "tiered_number",
-            description: "Social connection (tracked, not scored)", unit: "min",
-            tiers: [
-              { label: "0",    upTo: 1,    score: 0   },
-              { label: "15m",  upTo: 30,   score: 50  },
-              { label: "30m+", upTo: null, score: 100 }
-            ]
-          },
-          mindfulness: {
-            label: "Mindfulness", weight: 45, type: "tiered_number",
-            description: "Meditation / breathwork / gratitude", unit: "min",
-            tiers: [
-              { label: "0",    upTo: 1,    score: 0   },
-              { label: "5m",   upTo: 10,   score: 40  },
-              { label: "10m",  upTo: 20,   score: 70  },
-              { label: "20m+", upTo: null, score: 100 }
-            ]
-          }
-        }
-      }
-    };
-
-    // ── Scoring ──────────────────────────────────────────────────────────────
-    function calcMetricScore(cfg, metricData) {
-      if (metricData === undefined || metricData === null) return 0;
-
-      if (cfg.type === 'weighted_checklist') {
-        if (typeof metricData !== 'object') return 0;
-        let pts = 0;
-        for (const [k, item] of Object.entries(cfg.items)) {
-          if (metricData[k]) pts += item.points;
-        }
-        return Math.min(pts, cfg.cap) / cfg.cap * 100;
-      }
-
-      if (cfg.type === 'tiered_number') {
-        const val = parseFloat(metricData);
-        if (isNaN(val) || val < 0) return 0;
-        for (const tier of cfg.tiers) {
-          if (tier.upTo === null || val < tier.upTo) return tier.score;
-        }
-        return 0;
-      }
-
-      if (cfg.type === 'tiered_selector') {
-        if (typeof metricData !== 'object') return 0;
-        let maxScore = 0;
-        for (const [gk, group] of Object.entries(cfg.groups)) {
-          const sel = metricData[gk] || 'none';
-          const tier = group.tiers.find(t => t.key === sel);
-          if (tier && tier.score > maxScore) maxScore = tier.score;
-        }
-        return Math.min(maxScore, cfg.cap || 100);
-      }
-
-      return 0;
-    }
-
-    function calcPillarScore(pillarCfg, pillarData) {
-      let weighted = 0, totalW = 0;
-      for (const [k, cfg] of Object.entries(pillarCfg.metrics)) {
-        const score = calcMetricScore(cfg, pillarData?.[k]);
-        weighted += score * cfg.weight;
-        totalW += cfg.weight;
-      }
-      return totalW > 0 ? weighted / totalW : 0;
-    }
-
-    function overallScore(dayData) {
-      if (!dayData) return 0;
-      const keys = Object.keys(PILLARS);
-      return keys.reduce((sum, k) => sum + calcPillarScore(PILLARS[k], dayData[k]), 0) / keys.length;
-    }
-
-    function scoreColor(score) {
-      if (score >= 80) return '#22c55e';
-      if (score >= 60) return '#84cc16';
-      if (score >= 40) return '#eab308';
-      if (score >= 20) return '#f97316';
-      return '#ef4444';
-    }
-
-    // ── TrendBars — NO memo, always live ─────────────────────────────────────
-    function TrendBars({ data, activeDate }) {
-      const days = last7Days();
-      const today = todayStr();
-      return (
-        <div className="trend-chart">
-          {days.map((d) => {
-            const sc = Math.round(overallScore(data[d]));
-            const col = scoreColor(sc);
-            const isToday = d === today;
-            const isActive = d === activeDate;
-            return (
-              <div key={d} className="trend-col">
-                <div className="trend-bar-wrap">
-                  <div
-                    className="trend-bar"
-                    style={{
-                      height: sc > 0 ? `${sc}%` : '3px',
-                      background: col,
-                      opacity: isActive ? 1 : isToday ? 0.85 : 0.4,
-                      boxShadow: isActive && sc > 0 ? `0 0 10px ${col}60` : 'none',
-                    }}
-                  />
-                </div>
-                <span className={`trend-day${isToday ? ' today' : ''}`}>
-                  {dayLetter(d)}
-                </span>
-              </div>
-            );
-          })}
-        </div>
-      );
-    }
-
-    // ── Score Ring SVG ────────────────────────────────────────────────────────
-    function ScoreRing({ score, color, size = 72 }) {
-      const r = size / 2 - 6;
-      const circ = 2 * Math.PI * r;
-      const offset = circ * (1 - Math.max(0, Math.min(100, score)) / 100);
-      return (
-        <div className="score-ring" style={{ width: size, height: size }}>
-          <svg width={size} height={size}>
-            <circle cx={size/2} cy={size/2} r={r} fill="none" stroke="#e2e8f0" strokeWidth="5" />
-            <circle cx={size/2} cy={size/2} r={r} fill="none" stroke={color} strokeWidth="5"
-              strokeDasharray={circ} strokeDashoffset={offset} strokeLinecap="round"
-              style={{ transition: 'stroke-dashoffset 0.5s ease' }} />
-          </svg>
-          <div className="score-ring-text">
-            <span className="score-big" style={{ color }}>{Math.round(score)}</span>
-            <span className="score-pct">%</span>
-          </div>
-        </div>
-      );
-    }
-
-    // ── Metric Inputs ─────────────────────────────────────────────────────────
-    function ChecklistMetric({ cfg, value, color, onChange }) {
-      const checked = value || {};
-      let pts = 0;
-      for (const [k, item] of Object.entries(cfg.items)) {
-        if (checked[k]) pts += item.points;
-      }
-      const score = Math.round(Math.min(pts, cfg.cap) / cfg.cap * 100);
-
-      return (
-        <div>
-          <div className="checklist-items">
-            {Object.entries(cfg.items).map(([k, item]) => (
-              <div
-                key={k}
-                className={`check-item${checked[k] ? ' checked' : ''}`}
-                style={{ color }}
-                onClick={() => onChange({ ...checked, [k]: !checked[k] })}
-              >
-                <div className="check-box">{checked[k] ? '✓' : ''}</div>
-                <span className="check-label">{item.label}</span>
-                <span className="check-pts">+{item.points} {cfg.displayUnit}</span>
-              </div>
-            ))}
-          </div>
-          <div className="checklist-progress">
-            <div className="progress-bar">
-              <div className="progress-fill" style={{ width: `${score}%`, background: color }} />
-            </div>
-            <span className="progress-label" style={{ color }}>
-              {Math.min(pts, cfg.cap)}/{cfg.cap} {cfg.displayUnit}
-            </span>
-          </div>
-        </div>
-      );
-    }
-
-    function TieredNumberMetric({ cfg, value, color, onChange }) {
-      const strVal = (value !== undefined && value !== null) ? String(value) : '';
-      const numVal = parseFloat(strVal);
-
-      let activeTier = null;
-      if (!isNaN(numVal)) {
-        for (const tier of cfg.tiers) {
-          if (tier.upTo === null || numVal < tier.upTo) { activeTier = tier; break; }
-        }
-      }
-
-      function pickTier(tier) {
-        // tap a pill → snap to midpoint of that tier
-        if (tier.upTo === null) {
-          const prev = cfg.tiers[cfg.tiers.length - 2];
-          onChange(String(prev ? prev.upTo : 0));
-        } else {
-          const prevUpTo = cfg.tiers[cfg.tiers.indexOf(tier) - 1]?.upTo || 0;
-          onChange(String(prevUpTo + (tier.upTo - prevUpTo) / 2));
-        }
-      }
-
-      return (
-        <div className="tier-number-wrap">
-          <div className="tier-number-input">
-            <input
-              type="number"
-              className="num-input"
-              value={strVal}
-              min="0"
-              step="0.5"
-              placeholder="0"
-              style={{ borderColor: activeTier ? color : undefined }}
-              onChange={e => onChange(e.target.value)}
-            />
-            <span className="num-unit">{cfg.unit}</span>
-            {activeTier && (
-              <span style={{
-                fontSize: 13, fontWeight: 700, color,
-                marginLeft: 'auto',
-                background: `${color}20`,
-                padding: '4px 12px',
-                borderRadius: 20,
-              }}>
-                {activeTier.score}%
-              </span>
-            )}
-          </div>
-          <div className="tier-pills">
-            {cfg.tiers.map((tier) => {
-              const isActive = activeTier?.label === tier.label;
-              return (
-                <div
-                  key={tier.label}
-                  className={`tier-pill${isActive ? ' active' : ''}`}
-                  style={{ color: isActive ? color : undefined }}
-                  onClick={() => pickTier(tier)}
-                >
-                  {tier.label}
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      );
-    }
-
-    function TieredSelectorMetric({ cfg, value, color, onChange }) {
-      const sels = value || {};
-
-      function select(groupKey, key) {
-        onChange({ ...sels, [groupKey]: sels[groupKey] === key ? 'none' : key });
-      }
-
-      return (
-        <div className="tier-selector-groups">
-          {Object.entries(cfg.groups).map(([gk, group]) => {
-            const selected = sels[gk] || 'none';
-            return (
-              <div key={gk}>
-                <div className="tier-group-label">{group.label}</div>
-                <div className="tier-group-pills">
-                  {group.tiers.filter(t => t.key !== 'none').map((tier) => {
-                    const isActive = selected === tier.key;
-                    return (
-                      <div
-                        key={tier.key}
-                        className={`tier-pill${isActive ? ' active' : ''}`}
-                        style={{ color: isActive ? color : undefined }}
-                        onClick={() => select(gk, tier.key)}
-                      >
-                        {tier.label}
-                      </div>
-                    );
-                  })}
-                  {selected !== 'none' && (
-                    <div
-                      className="tier-pill"
-                      style={{ color: 'var(--text-muted)' }}
-                      onClick={() => onChange({ ...sels, [gk]: 'none' })}
-                    >
-                      ✕
-                    </div>
-                  )}
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      );
-    }
-
-    // ── MetricCard ────────────────────────────────────────────────────────────
-    function MetricCard({ metricKey, cfg, pillarData, color, onUpdate }) {
-      const value = pillarData?.[metricKey];
-      const score = Math.round(calcMetricScore(cfg, value));
-
-      return (
-        <div className="metric-card" style={{ borderColor: score > 0 ? `${color}40` : undefined }}>
-          <div className="metric-header">
-            <span className="metric-name">{cfg.label}</span>
-            <span className="metric-score-badge" style={{ color: score > 0 ? color : undefined }}>
-              {score}%
-            </span>
-          </div>
-          {cfg.description && <div className="metric-desc">{cfg.description}</div>}
-
-          {cfg.type === 'weighted_checklist' && (
-            <ChecklistMetric cfg={cfg} value={value} color={color}
-              onChange={v => onUpdate(metricKey, v)} />
-          )}
-          {cfg.type === 'tiered_number' && (
-            <TieredNumberMetric cfg={cfg} value={value} color={color}
-              onChange={v => onUpdate(metricKey, v)} />
-          )}
-          {cfg.type === 'tiered_selector' && (
-            <TieredSelectorMetric cfg={cfg} value={value} color={color}
-              onChange={v => onUpdate(metricKey, v)} />
-          )}
-        </div>
-      );
-    }
-
-    // ── PillarView ────────────────────────────────────────────────────────────
-    function PillarView({ pillarKey, data, date, setData, onBack, onSave, saved }) {
-      const pillar = PILLARS[pillarKey];
-      const color  = pillar.color;
-      const score  = Math.round(calcPillarScore(pillar, data[date]?.[pillarKey]));
-
-      const updateMetric = useCallback((metricKey, val) => {
-        setData(prev => {
-          const dayData    = prev[date] || {};
-          const pillarData = dayData[pillarKey] || {};
-          return {
-            ...prev,
-            [date]: { ...dayData, [pillarKey]: { ...pillarData, [metricKey]: val } }
-          };
-        });
-      }, [date, pillarKey, setData]);
-
-      return (
-        <>
-          <div className="scroll-area">
-            <div className="page">
-              {/* Pillar header */}
-              <div className="pillar-header" style={{ borderColor: `${color}30` }}>
-                <button className="back-btn" onClick={onBack}>← Back</button>
-                <div className="pillar-header-main">
-                  <span className="pillar-header-emoji">{pillar.emoji}</span>
-                  <div>
-                    <div style={{ fontWeight: 700, fontSize: 18 }}>{pillar.label}</div>
-                    <div style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 1 }}>{pillar.tagline}</div>
-                  </div>
-                  <span className="pillar-header-score" style={{ color }}>{score}%</span>
-                </div>
-              </div>
-
-              {/* Metrics */}
-              <div className="metrics-list">
-                {Object.entries(pillar.metrics).map(([mk, cfg]) => (
-                  <MetricCard
-                    key={mk}
-                    metricKey={mk}
-                    cfg={cfg}
-                    pillarData={data[date]?.[pillarKey]}
-                    color={color}
-                    onUpdate={updateMetric}
-                  />
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* Save */}
-          <div className="save-row">
-            <button
-              className="save-btn"
-              onClick={onSave}
-              style={{ background: saved ? '#22c55e' : color, color: '#000' }}
-            >
-              {saved ? '✓  Saved!' : 'Save'}
-            </button>
-          </div>
-        </>
-      );
-    }
-
-    // ── Dashboard ─────────────────────────────────────────────────────────────
-    function Dashboard({ data, date, setDate, onSelectPillar }) {
-      const dayData = data[date];
-      const overall = Math.round(overallScore(dayData));
-      const overCol = scoreColor(overall);
-      const today   = todayStr();
-
-      function changeDate(delta) {
-        const d = new Date(date + 'T00:00:00');
-        d.setDate(d.getDate() + delta);
-        const next = d.toISOString().slice(0, 10);
-        if (next <= today) setDate(next);
-      }
-
-      const mood = overall === 0
-        ? 'Log your day below ↓'
-        : overall >= 80 ? 'Crushing it 🔥'
-        : overall >= 60 ? 'Solid progress'
-        : overall >= 40 ? 'Keep going'
-        : 'Just getting started';
-
-      return (
-        <div className="scroll-area">
-          <div className="page">
-            {/* Overall */}
-            <div className="overall-section">
-              <ScoreRing score={overall} color={overCol} />
-              <div className="overall-info">
-                <div className="overall-label">{mood}</div>
-                <div className="overall-sub">{fmtDate(date)} · Overall score</div>
-              </div>
-            </div>
-
-            {/* Date nav */}
-            <div className="date-row">
-              <button className="date-btn" onClick={() => changeDate(-1)}>‹</button>
-              <div className="date-display">{fmtDate(date)}</div>
-              <button
-                className="date-btn"
-                onClick={() => changeDate(1)}
-                style={{ opacity: date >= today ? 0.25 : 1 }}
-                disabled={date >= today}
-              >›</button>
-            </div>
-
-            {/* 7-day trend — receives live data, no memoization */}
-            <div className="trend-section">
-              <div className="section-title">7-Day Trend</div>
-              <TrendBars data={data} activeDate={date} />
-            </div>
-
-            <div className="divider" />
-
-            {/* Pillar grid */}
-            <div className="pillar-grid">
-              {Object.entries(PILLARS).map(([key, pillar]) => {
-                const ps  = Math.round(calcPillarScore(pillar, dayData?.[key]));
-                const col = ps > 0 ? pillar.color : 'var(--text-muted)';
-                return (
-                  <button
-                    key={key}
-                    className="pillar-card"
-                    onClick={() => onSelectPillar(key)}
-                    style={{ borderColor: ps > 0 ? `${pillar.color}40` : undefined }}
-                  >
-                    <div className="card-emoji">{pillar.emoji}</div>
-                    <div className="card-label">{pillar.label}</div>
-                    <div className="card-score" style={{ color: col }}>
-                      {ps > 0 ? `${ps}%` : '—'}
-                    </div>
-                    <div className="card-bar">
-                      <div className="card-bar-fill" style={{ width: `${ps}%`, background: pillar.color }} />
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        </div>
-      );
-    }
-
-    // ── App Root ──────────────────────────────────────────────────────────────
-    function FourPillarsApp() {
-      const [data, setData]       = useState(() => loadData());
-      const [date, setDate]       = useState(todayStr());
-      const [tab, setTab]         = useState('dashboard');
-      const [saved, setSaved]     = useState(false);
-      const [syncStatus, setSyncStatus] = useState('pending'); // 'pending' | 'synced' | 'offline'
-
-      // Firebase real-time listener — fires on connect and whenever another device saves
-      useEffect(() => {
-        if (!fbRef) { setSyncStatus('offline'); return; }
-        const handler = (snapshot) => {
-          const fbData = snapshot.val();
-          if (fbData === null) {
-            // Firebase empty — push local data up so other device can get it
-            const local = loadData();
-            if (Object.keys(local).length > 0) fbRef.set(local).catch(() => {});
-          } else {
-            setData(prev => {
-              const merged = mergeData(prev, fbData);
-              saveData(merged); // keep localStorage in sync
-              return merged;
-            });
-          }
-          setSyncStatus('synced');
-        };
-        fbRef.on('value', handler, () => setSyncStatus('offline'));
-        return () => fbRef.off('value', handler);
-      }, []);
-
-      // Save just persists to localStorage and Firebase.
-      function handleSave() {
-        saveData(data);
-        if (fbRef) fbRef.set(data).catch(() => {});
-        setSaved(true);
-        setTimeout(() => setSaved(false), 2000);
-      }
-
-      function goToTab(key) {
-        setTab(key);
-        setSaved(false);
-      }
-
-      const isPillar = tab !== 'dashboard';
-
-      return (
-        <>
-          {/* Header — only dashboard */}
-          {!isPillar && (
-            <div className="header">
-              <div>
-                <div className="header-title">Akash Core ⚡</div>
-                <div className="header-sub">Command Center</div>
-              </div>
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 2 }}>
-                <div style={{ fontSize: 13, color: 'var(--text-muted)' }}>
-                  {new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
-                </div>
-                <div style={{
-                  fontSize: 10, fontWeight: 600, letterSpacing: '0.3px',
-                  color: syncStatus === 'synced' ? '#22c55e' : syncStatus === 'offline' ? '#ef4444' : '#94a3b8'
-                }}>
-                  {syncStatus === 'synced' ? '● SYNCED' : syncStatus === 'offline' ? '● OFFLINE' : '● SYNCING'}
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Main content */}
-          <div style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column', minHeight: 0 }}>
-            {isPillar ? (
-              <PillarView
-                key={`${tab}-${date}`}
-                pillarKey={tab}
-                data={data}
-                date={date}
-                setData={setData}
-                onBack={() => setTab('dashboard')}
-                onSave={handleSave}
-                saved={saved}
-              />
-            ) : (
-              <Dashboard
-                data={data}
-                date={date}
-                setDate={setDate}
-                onSelectPillar={goToTab}
-              />
-            )}
-          </div>
-
-          {/* Bottom nav */}
-          <nav className="bottom-nav">
-            {[
-              { key: 'dashboard', emoji: '🏠', label: 'Home'  },
-              { key: 'warrior',   emoji: '⚔️', label: 'Body'  },
-              { key: 'mastery',   emoji: '🧠', label: 'Mind'  },
-              { key: 'influence', emoji: '🌍', label: 'Brand' },
-              { key: 'grounding', emoji: '🌿', label: 'Soul'  },
-            ].map(({ key, emoji, label }) => (
-              <button
-                key={key}
-                className={`nav-btn${tab === key ? ' active' : ''}`}
-                onClick={() => goToTab(key)}
-              >
-                <span className="nav-icon">{emoji}</span>
-                <span
-                  className="nav-label"
-                  style={{ color: tab === key ? (PILLARS[key]?.color ?? 'var(--text)') : undefined }}
-                >
-                  {label}
-                </span>
-              </button>
-            ))}
-          </nav>
-        </>
-      );
-    }
-
-    window.PILLARS = PILLARS; // debug access
-    ReactDOM.createRoot(document.getElementById('root')).render(<FourPillarsApp />);
   </script>
 </body>
 </html>
