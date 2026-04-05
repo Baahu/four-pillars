@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <meta name="theme-color" content="#0a0a0f" />
+  <meta name="theme-color" content="#f8fafc" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="mobile-web-app-capable" content="yes" />
@@ -13,13 +13,13 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg: #0a0a0f;
-      --surface: #111118;
-      --surface2: #16161f;
-      --border: #1e1e2e;
-      --text: #e2e8f0;
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --surface2: #f1f5f9;
+      --border: #e2e8f0;
+      --text: #0f172a;
       --text-muted: #64748b;
-      --text-dim: #94a3b8;
+      --text-dim: #475569;
       --radius: 14px;
       --radius-sm: 8px;
       --nav-h: 64px;
@@ -740,7 +740,7 @@
       return '#ef4444';
     }
 
-    // ── TrendBars — NO memo, always live ─────────────────────────────────────
+    // ââ TrendBars â NO memo, always live âââââââââââââââââââââââââââââââââââââ
     function TrendBars({ data, activeDate }) {
       const days = last7Days();
       const today = todayStr();
@@ -774,7 +774,7 @@
       );
     }
 
-    // ── Score Ring SVG ────────────────────────────────────────────────────────
+    // ââ Score Ring SVG ââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
     function ScoreRing({ score, color, size = 72 }) {
       const r = size / 2 - 6;
       const circ = 2 * Math.PI * r;
@@ -782,7 +782,7 @@
       return (
         <div className="score-ring" style={{ width: size, height: size }}>
           <svg width={size} height={size}>
-            <circle cx={size/2} cy={size/2} r={r} fill="none" stroke="#1e1e2e" strokeWidth="5" />
+            <circle cx={size/2} cy={size/2} r={r} fill="none" stroke="#e2e8f0" strokeWidth="5" />
             <circle cx={size/2} cy={size/2} r={r} fill="none" stroke={color} strokeWidth="5"
               strokeDasharray={circ} strokeDashoffset={offset} strokeLinecap="round"
               style={{ transition: 'stroke-dashoffset 0.5s ease' }} />
@@ -795,7 +795,7 @@
       );
     }
 
-    // ── Metric Inputs ─────────────────────────────────────────────────────────
+    // ââ Metric Inputs âââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
     function ChecklistMetric({ cfg, value, color, onChange }) {
       const checked = value || {};
       let pts = 0;
@@ -814,7 +814,7 @@
                 style={{ color }}
                 onClick={() => onChange({ ...checked, [k]: !checked[k] })}
               >
-                <div className="check-box">{checked[k] ? '✓' : ''}</div>
+                <div className="check-box">{checked[k] ? 'â' : ''}</div>
                 <span className="check-label">{item.label}</span>
                 <span className="check-pts">+{item.points} {cfg.displayUnit}</span>
               </div>
@@ -844,7 +844,7 @@
       }
 
       function pickTier(tier) {
-        // tap a pill → snap to midpoint of that tier
+        // tap a pill â snap to midpoint of that tier
         if (tier.upTo === null) {
           const prev = cfg.tiers[cfg.tiers.length - 2];
           onChange(String(prev ? prev.upTo : 0));
@@ -933,7 +933,7 @@
                       style={{ color: 'var(--text-muted)' }}
                       onClick={() => onChange({ ...sels, [gk]: 'none' })}
                     >
-                      ✕
+                      â
                     </div>
                   )}
                 </div>
@@ -944,7 +944,7 @@
       );
     }
 
-    // ── MetricCard ────────────────────────────────────────────────────────────
+    // ââ MetricCard ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
     function MetricCard({ metricKey, cfg, pillarData, color, onUpdate }) {
       const value = pillarData?.[metricKey];
       const score = Math.round(calcMetricScore(cfg, value));
@@ -975,7 +975,7 @@
       );
     }
 
-    // ── PillarView ────────────────────────────────────────────────────────────
+    // ââ PillarView ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
     function PillarView({ pillarKey, data, date, setData, onBack, onSave, saved }) {
       const pillar = PILLARS[pillarKey];
       const color  = pillar.color;
@@ -998,7 +998,7 @@
             <div className="page">
               {/* Pillar header */}
               <div className="pillar-header" style={{ borderColor: `${color}30` }}>
-                <button className="back-btn" onClick={onBack}>← Back</button>
+                <button className="back-btn" onClick={onBack}>â Back</button>
                 <div className="pillar-header-main">
                   <span className="pillar-header-emoji">{pillar.emoji}</span>
                   <div>
@@ -1032,14 +1032,14 @@
               onClick={onSave}
               style={{ background: saved ? '#22c55e' : color, color: '#000' }}
             >
-              {saved ? '✓  Saved!' : 'Save'}
+              {saved ? 'â  Saved!' : 'Save'}
             </button>
           </div>
         </>
       );
     }
 
-    // ── Dashboard ─────────────────────────────────────────────────────────────
+    // ââ Dashboard âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
     function Dashboard({ data, date, setDate, onSelectPillar }) {
       const dayData = data[date];
       const overall = Math.round(overallScore(dayData));
@@ -1054,8 +1054,8 @@
       }
 
       const mood = overall === 0
-        ? 'Log your day below ↓'
-        : overall >= 80 ? 'Crushing it 🔥'
+        ? 'Log your day below â'
+        : overall >= 80 ? 'Crushing it ð¥'
         : overall >= 60 ? 'Solid progress'
         : overall >= 40 ? 'Keep going'
         : 'Just getting started';
@@ -1068,23 +1068,23 @@
               <ScoreRing score={overall} color={overCol} />
               <div className="overall-info">
                 <div className="overall-label">{mood}</div>
-                <div className="overall-sub">{fmtDate(date)} · Overall score</div>
+                <div className="overall-sub">{fmtDate(date)} Â· Overall score</div>
               </div>
             </div>
 
             {/* Date nav */}
             <div className="date-row">
-              <button className="date-btn" onClick={() => changeDate(-1)}>‹</button>
+              <button className="date-btn" onClick={() => changeDate(-1)}>â¹</button>
               <div className="date-display">{fmtDate(date)}</div>
               <button
                 className="date-btn"
                 onClick={() => changeDate(1)}
                 style={{ opacity: date >= today ? 0.25 : 1 }}
                 disabled={date >= today}
-              >›</button>
+              >âº</button>
             </div>
 
-            {/* 7-day trend — receives live data, no memoization */}
+            {/* 7-day trend â receives live data, no memoization */}
             <div className="trend-section">
               <div className="section-title">7-Day Trend</div>
               <TrendBars data={data} activeDate={date} />
@@ -1107,7 +1107,7 @@
                     <div className="card-emoji">{pillar.emoji}</div>
                     <div className="card-label">{pillar.label}</div>
                     <div className="card-score" style={{ color: col }}>
-                      {ps > 0 ? `${ps}%` : '—'}
+                      {ps > 0 ? `${ps}%` : 'â'}
                     </div>
                     <div className="card-bar">
                       <div className="card-bar-fill" style={{ width: `${ps}%`, background: pillar.color }} />
@@ -1121,7 +1121,7 @@
       );
     }
 
-    // ── App Root ──────────────────────────────────────────────────────────────
+    // ââ App Root ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
     function FourPillarsApp() {
       const [data, setData]       = useState(() => loadData());
       const [date, setDate]       = useState(todayStr());
@@ -1129,13 +1129,13 @@
       const [saved, setSaved]     = useState(false);
       const [syncStatus, setSyncStatus] = useState('pending'); // 'pending' | 'synced' | 'offline'
 
-      // Firebase real-time listener — fires on connect and whenever another device saves
+      // Firebase real-time listener â fires on connect and whenever another device saves
       useEffect(() => {
         if (!fbRef) { setSyncStatus('offline'); return; }
         const handler = (snapshot) => {
           const fbData = snapshot.val();
           if (fbData === null) {
-            // Firebase empty — push local data up so other device can get it
+            // Firebase empty â push local data up so other device can get it
             const local = loadData();
             if (Object.keys(local).length > 0) fbRef.set(local).catch(() => {});
           } else {
@@ -1168,11 +1168,11 @@
 
       return (
         <>
-          {/* Header — only dashboard */}
+          {/* Header â only dashboard */}
           {!isPillar && (
             <div className="header">
               <div>
-                <div className="header-title">Akash Core ⚡</div>
+                <div className="header-title">Akash Core â¡</div>
                 <div className="header-sub">Command Center</div>
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 2 }}>
@@ -1183,7 +1183,7 @@
                   fontSize: 10, fontWeight: 600, letterSpacing: '0.3px',
                   color: syncStatus === 'synced' ? '#22c55e' : syncStatus === 'offline' ? '#ef4444' : '#94a3b8'
                 }}>
-                  {syncStatus === 'synced' ? '● SYNCED' : syncStatus === 'offline' ? '● OFFLINE' : '● SYNCING'}
+                  {syncStatus === 'synced' ? 'â SYNCED' : syncStatus === 'offline' ? 'â OFFLINE' : 'â SYNCING'}
                 </div>
               </div>
             </div>
@@ -1215,11 +1215,11 @@
           {/* Bottom nav */}
           <nav className="bottom-nav">
             {[
-              { key: 'dashboard', emoji: '🏠', label: 'Home'  },
-              { key: 'warrior',   emoji: '⚔️', label: 'Body'  },
-              { key: 'mastery',   emoji: '🧠', label: 'Mind'  },
-              { key: 'influence', emoji: '🌍', label: 'Brand' },
-              { key: 'grounding', emoji: '🌿', label: 'Soul'  },
+              { key: 'dashboard', emoji: 'ð ', label: 'Home'  },
+              { key: 'warrior',   emoji: 'âï¸', label: 'Body'  },
+              { key: 'mastery',   emoji: 'ð§ ', label: 'Mind'  },
+              { key: 'influence', emoji: 'ð', label: 'Brand' },
+              { key: 'grounding', emoji: 'ð¿', label: 'Soul'  },
             ].map(({ key, emoji, label }) => (
               <button
                 key={key}
