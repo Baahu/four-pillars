@@ -1,9 +1,4 @@
-function offsetDate(base, delta) {
-      const [y,m,day] = base.split('-').map(Number);
-      const d = new Date(y, m-1, day);
-      d.setDate(d.getDate() + delta);
-      return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
-    }<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -473,6 +468,17 @@ function offsetDate(base, delta) {
     function todayStr() {
       const d = new Date();
       return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+    }
+
+    function offsetDate(base, delta) {
+      const [y,m,day] = base.split('-').map(Number);
+      const d = new Date(y, m-1, day);
+      d.setDate(d.getDate() + delta);
+      return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+    }
+
+    function last7(fromDate) {
+      return Array.from({ length:7 }, (_,i) => offsetDate(fromDate, i-6));
     }
 
     function last7Days() {
