@@ -47,9 +47,40 @@
     .sync-badge.synced { background: #dcfce7; color: #16a34a; }
     .sync-badge.offline { background: #fee2e2; color: #dc2626; }
 
+    .date-nav {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+    .date-nav button {
+      background: none;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      width: 28px;
+      height: 28px;
+      font-size: 14px;
+      color: #64748b;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s, border-color 0.15s;
+      flex-shrink: 0;
+    }
+    .date-nav button:hover:not(:disabled) {
+      background: #f1f5f9;
+      border-color: #cbd5e1;
+    }
+    .date-nav button:disabled {
+      color: #cbd5e1;
+      border-color: #f1f5f9;
+      cursor: default;
+    }
     .date-label {
       font-size: 11px; font-weight: 700; color: #94a3b8;
-      letter-spacing: 0.8px; text-transform: uppercase; margin-bottom: 14px;
+      letter-spacing: 0.8px; text-transform: uppercase;
+      flex: 1; text-align: center;
     }
 
     .pillars { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
@@ -115,7 +146,12 @@
       <div class="sync-badge" id="syncBadge">● Connecting</div>
     </div>
 
-    <div class="date-label" id="dateLabel">Today</div>
+    <div class="date-nav">
+      <button id="btnPrev" title="Previous day">&#8249;</button>
+      <div class="date-label" id="dateLabel">Today</div>
+      <button id="btnNext" title="Next day" disabled>&#8250;</button>
+    </div>
+
     <div class="pillars" id="pillars"></div>
     <div class="overall" id="overall" style="display:none">
       <div class="overall-label">Overall completion</div>
@@ -127,7 +163,6 @@
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-database-compat.js"></script>
   <script>
-    // Pillar display config — only for labels/emojis/colors, NOT scoring
     const PILLARS = {
       warrior:   { label: 'Warrior',   emoji: '⚔️',  color: '#ef4444' },
       mastery:   { label: 'Mastery',   emoji: '🧠',  color: '#8b5cf6' },
@@ -135,17 +170,28 @@
       grounding: { label: 'Grounding', emoji: '🌿',  color: '#10b981' }
     };
 
-    function todayStr() {
-      return new Date().toISOString().slice(0, 10);
+    // offset = 0 means today, -1 = yesterday, etc.
+    let offset = 0;
+    let fbData = null;
+
+    // Use local date math to avoid UTC timezone issues
+    function getDateStr(off) {
+      const d = new Date();
+      d.setDate(d.getDate() + off);
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      return `${y}-${m}-${day}`;
     }
 
-    function fmtDate(d) {
-      return new Date(d + 'T00:00:00').toLocaleDateString('en-US', {
+    function fmtDate(dateStr) {
+      // Parse as local date to avoid off-by-one from UTC conversion
+      const [y, m, d] = dateStr.split('-').map(Number);
+      return new Date(y, m - 1, d).toLocaleDateString('en-US', {
         weekday: 'short', month: 'short', day: 'numeric'
       });
     }
 
-    // Recursively count filled leaf values in a data object
     function countFields(obj) {
       if (!obj || typeof obj !== 'object') {
         return { filled: (obj ? 1 : 0), total: 1 };
@@ -159,28 +205,32 @@
       return { filled, total };
     }
 
-    // Get readable leaf items from a data object (max depth 2)
-    function getItems(obj, prefix) {
+    function getItems(obj) {
       const items = [];
       if (!obj || typeof obj !== 'object') return items;
       for (const [k, v] of Object.entries(obj)) {
-        const label = k.replace(/_/g, ' ');
         if (typeof v === 'object' && v !== null) {
           for (const [k2, v2] of Object.entries(v)) {
             items.push({ label: k2.replace(/_/g, ' '), filled: !!v2 });
           }
         } else {
-          items.push({ label, filled: !!v });
+          items.push({ label: k.replace(/_/g, ' '), filled: !!v });
         }
       }
-      return items.slice(0, 5); // max 5 items shown per pillar
+      return items.slice(0, 5);
     }
 
-    function render(data) {
-      const today = todayStr();
-      const dayData = data?.[today] || {};
+    function renderForOffset() {
+      if (!fbData) return;
 
-      document.getElementById('dateLabel').textContent = fmtDate(today);
+      const dateStr = getDateStr(offset);
+      const isToday = offset === 0;
+
+      // Update nav buttons
+      document.getElementById('btnNext').disabled = isToday;
+      document.getElementById('dateLabel').textContent = isToday ? 'TODAY · ' + fmtDate(dateStr) : fmtDate(dateStr);
+
+      const dayData = fbData[dateStr] || {};
 
       const pillarsEl = document.getElementById('pillars');
       pillarsEl.innerHTML = '';
@@ -199,9 +249,7 @@
 
         const div = document.createElement('div');
         div.className = 'pillar' + (hasData ? ' has-data' : '');
-        if (hasData) {
-          div.style.borderColor = pillar.color + '50';
-        }
+        if (hasData) div.style.borderColor = pillar.color + '50';
 
         const itemsHtml = items.length > 0
           ? `<div class="items">${items.map(item =>
@@ -226,10 +274,19 @@
       const overallPct = totalFields > 0 ? Math.round((totalFilled / totalFields) * 100) : 0;
       document.getElementById('overall').style.display = 'flex';
       document.getElementById('overallScore').textContent = overallPct > 0 ? overallPct + '%' : '—';
-
-      const now = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
-      document.getElementById('footer').textContent = `Last synced · ${now}`;
     }
+
+    // Date navigation
+    document.getElementById('btnPrev').addEventListener('click', () => {
+      offset -= 1;
+      renderForOffset();
+    });
+    document.getElementById('btnNext').addEventListener('click', () => {
+      if (offset < 0) {
+        offset += 1;
+        renderForOffset();
+      }
+    });
 
     const FIREBASE_CONFIG = {
       apiKey: "AIzaSyACCybk41cW0K272GhvfqgyhKf8x8ee5ys",
@@ -249,9 +306,12 @@
         const badge = document.getElementById('syncBadge');
         badge.textContent = '● SYNCED';
         badge.className = 'sync-badge synced';
-        const fbData = snapshot.val();
-        if (fbData) render(fbData);
-        else {
+        fbData = snapshot.val();
+        if (fbData) {
+          renderForOffset();
+          const now = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+          document.getElementById('footer').textContent = `Last synced · ${now}`;
+        } else {
           document.getElementById('footer').textContent = 'No data in Firebase yet';
         }
       }, () => {
