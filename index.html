@@ -417,10 +417,10 @@
   <script type="text/babel">
     const { useState, useCallback, useEffect } = React;
 
-    // ── Storage ──────────────────────────────────────────────────────────────
+    // ââ Storage ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
     const STORAGE_KEY = "four_pillars_v4";
 
-    // ── Firebase Realtime Sync ────────────────────────────────────────────────
+    // ââ Firebase Realtime Sync ââââââââââââââââââââââââââââââââââââââââââââââââ
     const FIREBASE_CONFIG = {
       apiKey: "AIzaSyACCybk41cW0K272GhvfqgyhKf8x8ee5ys",
       authDomain: "akash-core.firebaseapp.com",
@@ -464,7 +464,7 @@
       try { localStorage.setItem(STORAGE_KEY, JSON.stringify(d)); } catch (_) {}
     }
 
-    // ── Date Helpers ─────────────────────────────────────────────────────────
+    // ââ Date Helpers âââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
     function todayStr() {
       const d = new Date();
       return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
@@ -505,10 +505,10 @@
       return new Date(dateStr + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'narrow' });
     }
 
-    // ── Pillars Config ───────────────────────────────────────────────────────
+    // ââ Pillars Config âââââââââââââââââââââââââââââââââââââââââââââââââââââââ
     const PILLARS = {
       warrior: {
-        label: "Warrior", emoji: "⚔️", color: "#ef4444",
+        label: "Warrior", emoji: "âï¸", color: "#ef4444",
         tagline: "Forge your body, own your day",
         metrics: {
           exercise: {
@@ -528,9 +528,9 @@
             description: "7+ hours target", unit: "hrs",
             tiers: [
               { label: "<4h",  upTo: 4,    score: 0   },
-              { label: "4–6h", upTo: 6,    score: 50  },
-              { label: "6–7h", upTo: 7,    score: 80  },
-              { label: "7–8h", upTo: 8,    score: 90  },
+              { label: "4â6h", upTo: 6,    score: 50  },
+              { label: "6â7h", upTo: 7,    score: 80  },
+              { label: "7â8h", upTo: 8,    score: 90  },
               { label: "8h+",  upTo: null, score: 100 }
             ]
           },
@@ -550,7 +550,7 @@
       },
 
       mastery: {
-        label: "Mastery", emoji: "🧠", color: "#a855f7",
+        label: "Mastery", emoji: "ð§ ", color: "#a855f7",
         tagline: "Teach. Learn. Repeat.",
         metrics: {
           learn: {
@@ -592,7 +592,7 @@
       },
 
       influence: {
-        label: "Influence", emoji: "🌍", color: "#f97316",
+        label: "Influence", emoji: "ð", color: "#f97316",
         tagline: "10M people will know GM Akash",
         metrics: {
           create: {
@@ -634,7 +634,7 @@
         }
       },
       grounding: {
-        label: "Grounding", emoji: "🌿", color: "#22c55e",
+        label: "Grounding", emoji: "ð¿", color: "#22c55e",
         tagline: "Stay rooted to what matters",
         metrics: {
           family: {
@@ -647,25 +647,23 @@
               { label: "1h+", upTo: null, score: 100 }
             ]
           },
-          self: {
-            label: "Self", weight: 20, type: "tiered_number",
-            description: "Journaling / reflection / self-care", unit: "min",
-            tiers: [
-              { label: "0",    upTo: 1,    score: 0   },
-              { label: "10m",  upTo: 15,   score: 50  },
-              { label: "20m",  upTo: 30,   score: 80  },
-              { label: "30m+", upTo: null, score: 100 }
-            ]
+          reflection: {
+            label: "Reflection", weight: 20, type: "tiered_selector",
+            description: "Journaling / Walking / Visualization",
+            cap: 100,
+            groups: {
+              time: {
+                label: "Time Spent",
+                tiers: [
+                  { key: "15min", label: "15 min", score: 25  },
+                  { key: "30min", label: "30 min", score: 50  },
+                  { key: "45min", label: "45 min", score: 75  },
+                  { key: "60min", label: "1 hr",   score: 100 }
+                ]
+              }
+            }
           },
-          friends: {
-            label: "Friends", weight: 0, type: "tiered_number",
-            description: "Social connection (tracked, not scored)", unit: "min",
-            tiers: [
-              { label: "0",    upTo: 1,    score: 0   },
-              { label: "15m",  upTo: 30,   score: 50  },
-              { label: "30m+", upTo: null, score: 100 }
-            ]
-          },
+
           mindfulness: {
             label: "Mindfulness", weight: 45, type: "tiered_number",
             description: "Meditation / breathwork / gratitude", unit: "min",
@@ -680,7 +678,7 @@
       }
     };
 
-    // ── Scoring ──────────────────────────────────────────────────────────────
+    // ââ Scoring ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
     function calcMetricScore(cfg, metricData) {
       if (metricData === undefined || metricData === null) return 0;
 
@@ -748,7 +746,7 @@
       return '#ef4444';
     }
 
-    // ── TrendBars — NO memo, always live ─────────────────────────────────────
+    // ââ TrendBars â NO memo, always live âââââââââââââââââââââââââââââââââââââ
     function TrendBars({ data, activeDate }) {
       const days = last7Days();
       const today = todayStr();
@@ -782,7 +780,7 @@
       );
     }
 
-    // ── Score Ring SVG ────────────────────────────────────────────────────────
+    // ââ Score Ring SVG ââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
     function ScoreRing({ score, color, size = 72 }) {
       const r = size / 2 - 6;
       const circ = 2 * Math.PI * r;
@@ -803,7 +801,7 @@
       );
     }
 
-    // ── Metric Inputs ─────────────────────────────────────────────────────────
+    // ââ Metric Inputs âââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
     function ChecklistMetric({ cfg, value, color, onChange }) {
       const checked = value || {};
       let pts = 0;
@@ -822,7 +820,7 @@
                 style={{ color }}
                 onClick={() => onChange({ ...checked, [k]: !checked[k] })}
               >
-                <div className="check-box">{checked[k] ? '✓' : ''}</div>
+                <div className="check-box">{checked[k] ? 'â' : ''}</div>
                 <span className="check-label">{item.label}</span>
                 <span className="check-pts">+{item.points} {cfg.displayUnit}</span>
               </div>
@@ -856,7 +854,7 @@
                 style={{ color }}
                 onClick={() => onChange({ ...checked, [opt.key]: !checked[opt.key] })}
               >
-                <div className="check-box">{checked[opt.key] ? '✓' : ''}</div>
+                <div className="check-box">{checked[opt.key] ? 'â' : ''}</div>
                 <span className="check-label">{opt.label}</span>
               </div>
             ))}
@@ -882,7 +880,7 @@
       }
 
       function pickTier(tier) {
-        // tap a pill → snap to midpoint of that tier
+        // tap a pill â snap to midpoint of that tier
         if (tier.upTo === null) {
           const prev = cfg.tiers[cfg.tiers.length - 2];
           onChange(String(prev ? prev.upTo : 0));
@@ -961,7 +959,7 @@
                         style={{ color }}
                         onClick={() => toggleActivity(gk, opt.key)}
                       >
-                        <div className="check-box">{checked[opt.key] ? '✓' : ''}</div>
+                        <div className="check-box">{checked[opt.key] ? 'â' : ''}</div>
                         <span className="check-label">{opt.label}</span>
                       </div>
                     ))}
@@ -990,7 +988,7 @@
                     <div className="tier-pill"
                       style={{ color: 'var(--text-muted)' }}
                       onClick={() => onChange({ ...sels, [gk]: 'none' })}
-                    >✕</div>
+                    >â</div>
                   )}
                 </div>
               </div>
@@ -1032,7 +1030,7 @@
       );
     }
 
-    // ── PillarView ────────────────────────────────────────────────────────────
+    // ââ PillarView ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
     function PillarView({ pillarKey, data, date, setData, onBack, onSave, saved }) {
       const pillar = PILLARS[pillarKey];
       const color  = pillar.color;
@@ -1055,7 +1053,7 @@
             <div className="page">
               {/* Pillar header */}
               <div className="pillar-header" style={{ borderColor: `${color}30` }}>
-                <button className="back-btn" onClick={onBack}>← Back</button>
+                <button className="back-btn" onClick={onBack}>â Back</button>
                 <div className="pillar-header-main">
                   <span className="pillar-header-emoji">{pillar.emoji}</span>
                   <div>
@@ -1089,14 +1087,14 @@
               onClick={onSave}
               style={{ background: saved ? '#22c55e' : color, color: '#000' }}
             >
-              {saved ? '✓  Saved!' : 'Save'}
+              {saved ? 'â  Saved!' : 'Save'}
             </button>
           </div>
         </>
       );
     }
 
-    // ── Dashboard ─────────────────────────────────────────────────────────────
+    // ââ Dashboard âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
     function Dashboard({ data, date, setDate, onSelectPillar }) {
       const dayData = data[date];
       const overall = Math.round(overallScore(dayData));
@@ -1112,8 +1110,8 @@
       }
 
       const mood = overall === 0
-        ? 'Log your day below ↓'
-        : overall >= 80 ? 'Crushing it 🔥'
+        ? 'Log your day below â'
+        : overall >= 80 ? 'Crushing it ð¥'
         : overall >= 60 ? 'Solid progress'
         : overall >= 40 ? 'Keep going'
         : 'Just getting started';
@@ -1126,23 +1124,23 @@
               <ScoreRing score={overall} color={overCol} />
               <div className="overall-info">
                 <div className="overall-label">{mood}</div>
-                <div className="overall-sub">{fmtDate(date)} · Overall score</div>
+                <div className="overall-sub">{fmtDate(date)} Â· Overall score</div>
               </div>
             </div>
 
             {/* Date nav */}
             <div className="date-row">
-              <button className="date-btn" onClick={() => changeDate(-1)}>‹</button>
+              <button className="date-btn" onClick={() => changeDate(-1)}>â¹</button>
               <div className="date-display">{fmtDate(date)}</div>
               <button
                 className="date-btn"
                 onClick={() => changeDate(1)}
                 style={{ opacity: date >= today ? 0.25 : 1 }}
                 disabled={date >= today}
-              >›</button>
+              >âº</button>
             </div>
 
-            {/* 7-day trend — receives live data, no memoization */}
+            {/* 7-day trend â receives live data, no memoization */}
             <div className="trend-section">
               <div className="section-title">7-Day Trend</div>
               <TrendBars data={data} activeDate={date} />
@@ -1165,7 +1163,7 @@
                     <div className="card-emoji">{pillar.emoji}</div>
                     <div className="card-label">{pillar.label}</div>
                     <div className="card-score" style={{ color: col }}>
-                      {ps > 0 ? `${ps}%` : '—'}
+                      {ps > 0 ? `${ps}%` : 'â'}
                     </div>
                     <div className="card-bar">
                       <div className="card-bar-fill" style={{ width: `${ps}%`, background: pillar.color }} />
@@ -1179,7 +1177,7 @@
       );
     }
 
-    // ── App Root ──────────────────────────────────────────────────────────────
+    // ââ App Root ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
     function FourPillarsApp() {
       const [data, setData]       = useState(() => loadData());
       const [date, setDate]       = useState(todayStr());
@@ -1187,13 +1185,13 @@
       const [saved, setSaved]     = useState(false);
       const [syncStatus, setSyncStatus] = useState('pending'); // 'pending' | 'synced' | 'offline'
 
-      // Firebase real-time listener — fires on connect and whenever another device saves
+      // Firebase real-time listener â fires on connect and whenever another device saves
       useEffect(() => {
         if (!fbRef) { setSyncStatus('offline'); return; }
         const handler = (snapshot) => {
           const fbData = snapshot.val();
           if (fbData === null) {
-            // Firebase empty — push local data up so other device can get it
+            // Firebase empty â push local data up so other device can get it
             const local = loadData();
             if (Object.keys(local).length > 0) fbRef.set(local).catch(() => {});
           } else {
@@ -1226,11 +1224,11 @@
 
       return (
         <>
-          {/* Header — only dashboard */}
+          {/* Header â only dashboard */}
           {!isPillar && (
             <div className="header">
               <div>
-                <div className="header-title">Akash Core ⚡</div>
+                <div className="header-title">Akash Core â¡</div>
                 <div className="header-sub">Command Center</div>
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 2 }}>
@@ -1241,7 +1239,7 @@
                   fontSize: 10, fontWeight: 600, letterSpacing: '0.3px',
                   color: syncStatus === 'synced' ? '#22c55e' : syncStatus === 'offline' ? '#ef4444' : '#94a3b8'
                 }}>
-                  {syncStatus === 'synced' ? '● SYNCED' : syncStatus === 'offline' ? '● OFFLINE' : '● SYNCING'}
+                  {syncStatus === 'synced' ? 'â SYNCED' : syncStatus === 'offline' ? 'â OFFLINE' : 'â SYNCING'}
                 </div>
               </div>
             </div>
@@ -1273,11 +1271,11 @@
           {/* Bottom nav */}
           <nav className="bottom-nav">
             {[
-              { key: 'dashboard', emoji: '🏠', label: 'Home'  },
-              { key: 'warrior',   emoji: '⚔️', label: 'Body'  },
-              { key: 'mastery',   emoji: '🧠', label: 'Mind'  },
-              { key: 'influence', emoji: '🌍', label: 'Brand' },
-              { key: 'grounding', emoji: '🌿', label: 'Soul'  },
+              { key: 'dashboard', emoji: 'ð ', label: 'Home'  },
+              { key: 'warrior',   emoji: 'âï¸', label: 'Body'  },
+              { key: 'mastery',   emoji: 'ð§ ', label: 'Mind'  },
+              { key: 'influence', emoji: 'ð', label: 'Brand' },
+              { key: 'grounding', emoji: 'ð¿', label: 'Soul'  },
             ].map(({ key, emoji, label }) => (
               <button
                 key={key}
