@@ -137,6 +137,7 @@
     .pillar-card:active { transform: scale(0.97); opacity: 0.85; }
     .card-emoji { font-size: 22px; line-height: 1; }
     .card-label { font-size: 11px; color: var(--text-muted); font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; }
+    .card-tagline { font-size: 11px; color: var(--text-muted); font-style: italic; line-height: 1.3; opacity: 0.75; }
     .card-score { font-size: 28px; font-weight: 800; letter-spacing: -1px; margin-top: auto; }
     .card-bar { height: 3px; border-radius: 2px; background: var(--border); margin-top: 2px; }
     .card-bar-fill { height: 100%; border-radius: 2px; transition: width 0.4s ease; }
@@ -1151,6 +1152,7 @@
                   >
                     <div className="card-emoji">{pillar.emoji}</div>
                     <div className="card-label">{pillar.label}</div>
+                    <div className="card-tagline">{pillar.tagline}</div>
                     <div className="card-score" style={{ color: col }}>
                       {ps > 0 ? `${ps}%` : '—'}
                     </div>
